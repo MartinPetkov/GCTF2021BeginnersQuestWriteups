@@ -1,0 +1,1136 @@
+
+<!-- saved from url=(0053)https://high-speed-chase-web.2021.ctfcompetition.com/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Note that this is a PROGRAMMING challenge, not a reverse-engineering
+         one. It's way easier to solve it in the intended way (by writing the
+         code).
+         That said, I'm a sign, not a cop.
+
+         BTW, car sprites are by looneybits on CC0 (found on opengameart.org).
+    -->
+    
+    <title>Car Interface</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300&family=Share+Tech+Mono&display=swap');
+
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  max-height: 100vh;
+}
+
+div.main {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+div.top {
+  position: absolute;
+  background-color: #0d497f;
+  height: 30%;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+
+div.bottom {
+  position: absolute;
+  height: 70%;
+  width: 100%;
+  top: 30%;
+  left: 0;
+}
+
+div.left {
+  position: absolute;
+  background-color: #032135;
+  width: 70%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+textarea#editor {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  padding: 1em;
+  overflow: auto;
+  outline: none;
+  box-shadow: none;
+  resize: none;
+}
+
+* {
+  scrollbar-width: auto;
+  scrollbar-color: #0a3550 #011623;
+}
+
+*::-webkit-scrollbar {
+  width: 16px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #011623;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #0a3550;
+}
+
+.code {
+  font-size: 1.25em;
+  color: white;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+div.right {
+  position: absolute;
+  background-color: #042b44;
+  width: 30%;
+  max-width: 30%;
+  max-height: 100%;
+  height: 100%;
+  top: 0;
+  left: 70%;
+  color: white;
+  overflow-y: scroll;
+}
+
+div.rightinner {
+  padding: 1em;
+}
+
+/* Good stuff: https://www.bestcssbuttongenerator.com/ */
+button {
+  width: 100%;
+  box-shadow:inset 0px 34px 0px -15px #b54b3a;
+  background-color:#a73f2d;
+  border:1px solid #241d13;
+  display:inline-block;
+  cursor:pointer;
+  color:#ffffff;
+  font-family: 'Montserrat', sans-serif;
+  font-size:15px;
+  font-weight:bold;
+  padding:9px 23px;
+  text-decoration:none;
+  text-shadow:0px -1px 0px #7a2a1d;
+}
+
+button:hover {
+  background-color:#b34332;
+}
+
+button:disabled,
+button[disabled] {
+  box-shadow:inset 0px 34px 0px -15px #686868;
+  background-color:#5b5b5b;
+  border:1px solid #1c1c1c;
+}
+
+button:active {
+  position:relative;
+  top:1px;
+}
+
+canvas#satellite {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+div#topcaption {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #07233c;
+  color: #fff;
+  width: 8em;
+  padding-top: 0.25em;
+  padding-left: 0.25em;
+  padding-right: 1em;
+  padding-bottom: 0.25em;
+  clip-path: polygon(0 0, 8.5em 0, 7em 100%, 0 100%);
+}
+
+div#flag {
+  position: absolute;
+  top: 30%;
+  left: 0;
+  width: 100%;
+  height: 1.25em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  color: #fff;
+  font-size: 2em;
+  text-align: center;
+  font-weight: bold;
+  display: none;
+}
+
+div#error {
+  border: 1px solid #f58675;
+  background-color: #79382d;
+  padding: 0.5em;
+  padding-bottom: 1em;
+  margin-top: 0.5em;
+}
+
+div#error div.code {
+  font-size: 0.8em;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+
+button#errorclose {
+  width: 2em;
+  height: 2em;
+  padding: 0;
+  padding-right: 1px;
+  float: right;
+}
+    </style>
+  <style>
+            .flipX video::-webkit-media-text-track-display {
+                transform: matrix(-1, 0, 0, 1, 0, 0) !important;
+            }
+            .flipXY video::-webkit-media-text-track-display {
+                transform: matrix(-1, 0, 0, -1, 0, 0) !important;
+            }
+            .flipXYX video::-webkit-media-text-track-display {
+                transform: matrix(1, 0, 0, -1, 0, 0) !important;
+            }</style></head>
+  <body class="vsc-initialized">
+    <div class="main">
+      <div class="top">
+        <canvas id="satellite" width="792" height="128"></canvas>
+        <div id="topcaption"><b>Satellite Feed</b></div>
+        <div id="flag"></div>
+      </div>
+      <div class="bottom">
+        <div class="left">
+          <div class="code">function controlCar(scanArray) {</div>
+          <textarea class="code" id="editor" spellcheck="false" autofocus="" placeholder="writeJavaScriptCodeHere();"></textarea>
+          <div class="code">}</div>
+        </div>
+        <div class="right">
+
+          <div class="rightinner">
+            <button id="execute">Engage Re-programmed Self-Driving Mode!</button>
+            <div id="leftsubview">
+              <div id="leftdesc">
+                <p><b>Car Self-Driving Interface</b></p>
+                <p>You need to re-implement the <code>controlCar</code> function.</p>
+                <p>To implement it in JavaScript use the editor on the left.</p>
+                <p>When implemented, <code>controlCar</code> function will be called several times per second during the chase to allow for course corrections.</p>
+                <p>The <code>controlCar</code> function takes a single parameter – <code>scanArray</code> –
+                which is an array containing 17 integers denoting distance from your car to the nearest obstacle:</p>
+                <ul>
+                  <li>[indexes 0-7]: on the left side of the car (index 7 is the measurement at the left headlight),</li>
+                  <li>[index 8]: at the center of the car,</li>
+                  <li>[indexes 9-16]: on the right side of the car (index 9 is the measurement at the right headlight).</li>
+                </ul>
+                <p>See also <a href="https://high-speed-chase-web.2021.ctfcompetition.com/task3explained.png" class="hoverZoomLink">this image</a> (it's not precise, but will give you an idea what you are looking at).</p>
+                <p>All measurements are parallel to each other.</p>
+                <p>A negative measurement might appear if the obstacle is very close behind our car.</p>
+                <p>The <code>controlCar</code> must return an integer denoting where the car should drive:</p>
+                <ul>
+                  <li>-1 (or any other negative value): drive more to the left,</li>
+                  <li>0: continue straight / straighten up the car,</li>
+                  <li>1 (or any other positive value): drive more to the right.</li>
+                </ul>
+
+
+              </div>
+
+              <div id="error" style="display: none;">
+                <button id="errorclose">✖</button>
+                <p><b>Exception!</b></p>
+                <div class="code" id="errortext"></div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+<!-- Vertex Shader (Main) -->
+  <script type="x-shader/x-vertex" id="vshader">#version 300 es
+
+in vec2 position;
+in vec2 aTextureCoord;
+
+out highp vec2 vTextureCoord;
+
+void main() {
+  gl_Position = vec4(position, 0.0, 1.0);
+  vTextureCoord = aTextureCoord;
+}
+  </script>
+<!-- Fragment Shader (Main) -->
+  <script type="x-shader/x-fragment" id="fshader">#version 300 es
+precision mediump float;
+
+in highp vec2 vTextureCoord;
+
+uniform sampler2D uSampler;
+
+uniform float roadPos;
+
+out vec4 fragColor;
+
+void main() {
+  if (vTextureCoord.y < 0.5) {
+    // Road.
+    fragColor = texture(
+        uSampler, vec2(vTextureCoord.x + roadPos, vTextureCoord.y));
+  } else {
+    fragColor = texture(uSampler, vTextureCoord);
+  }
+}
+  </script>
+<!-- Vertex Shader (Post) -->
+<script type="x-shader/x-vertex" id="vshaderpost">#version 300 es
+
+in vec2 position;
+in vec2 aTextureCoord;
+
+out highp vec2 vTextureCoord;
+
+void main() {
+  gl_Position = vec4(position, 0.0, 1.0);
+  vTextureCoord = aTextureCoord;
+}
+  </script>
+<!-- Fragment Shader (Post) -->
+  <script type="x-shader/x-fragment" id="fshaderpost">#version 300 es
+precision mediump float;
+
+in highp vec2 vTextureCoord;
+
+uniform sampler2D uSampler;
+uniform int seed;
+uniform int speed;
+uniform float noiseLevel;
+
+out vec4 fragColor;
+
+void main() {
+  vec2 tc = vTextureCoord;
+  vec4 t = texture(uSampler, tc);
+
+  if (t.g < t.r * 1.3) {
+    float s = 1.0;
+    float k = 1.0;
+    float d = 1.0 / float(speed);
+    for (int i = 0; i < speed; i++) {
+      t += texture(uSampler, vTextureCoord + vec2(float(i + 1) / 792.0, 0)) * k;
+      s += k;
+      k -= d;
+    }
+    t /= s;
+  }
+
+  float avg = 0.299 * t.r + 0.587 * t.g + 0.114 * t.b;
+
+  int rng = (int(gl_FragCoord.x) * 14699 +
+             int(gl_FragCoord.y) * 18097 +
+             seed) % 1237;
+
+  avg *= float(rng & 255) / noiseLevel + 0.75;
+
+  avg *= (sin(gl_FragCoord.y * 1.5) + 1.0) / 2.0 * 0.3 + 0.7;
+
+  fragColor = vec4(
+      avg * (float(0x73) / 255.0),
+      avg * (float(0xA8) / 255.0),
+      avg * (float(0xD4) / 255.0),
+      1
+  );
+
+}
+  </script>
+  <script>
+"use strict";
+const LOGIC_TIMEOUT = 1000 / 15 | 0;
+const START_X = -10;
+const START_Y = 0;
+const SPEED = 45;
+const SCAN_COUNT = 8;  // Per side.
+const MIN_DIST = 3;
+const FADE_SPEED = 512;
+
+let gl = null;
+let scene = {
+  roadPos: 0,
+  postSpeed: 0,
+  noiseLevel: 1,
+};
+let ctx = {
+  timestamp: null,
+  time: 0,  // Timestamp, but in seconds.
+  carLocations: [],
+  carOffset: 0,
+  pX: 0,
+  pY: 1.5,
+  running: false,
+  crashed: false,
+  calcPositions: [],
+  calcProgress: 0,
+  calcFunction: null,
+  fadeIn: false,
+  fadeInCb: null,
+  fadeOut: false,
+  fadeOutCb: null,
+};
+
+let prngState = [0, 0];
+function setRandomSeed(s) {
+  prngState[0] = s & 0x7fff;
+  prngState[1] = (s >> 15) & 0x7fff;
+}
+
+function getRandom(a, b) {
+  const v = (prngState[0] * 16807 + 48271) & 0x7fff;
+  const r = v % (b - a + 1) + a;
+  prngState[0] = v;
+  prngState[0] ^= prngState[1];
+  prngState[1] ^= prngState[0];
+  prngState[0] ^= prngState[1];
+  return r;
+}
+
+function loadTexture(url) {
+  const texture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  const level = 0;
+  const internalFormat = gl.RGBA;
+  const width = 1;
+  const height = 1;
+  const border = 0;
+  const srcFormat = gl.RGBA;
+  const srcType = gl.UNSIGNED_BYTE;
+  const pixel = new Uint8Array([0, 128, 255, 255]);
+  gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
+                width, height, border, srcFormat, srcType,
+                pixel);
+
+  const image = new Image();
+  image.onload = () => {
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
+                  srcFormat, srcType, image);
+
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  };
+  image.src = url;
+
+  return texture;
+}
+
+function makeFrameTexture(width, height) {
+  const texture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  const level = 0;
+  const internalFormat = gl.RGBA;
+  const border = 0;
+  const srcFormat = gl.RGBA;
+  const srcType = gl.UNSIGNED_BYTE;
+  const data = null;
+
+  gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
+                width, height, border, srcFormat, srcType,
+                data);
+
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+
+  return texture;
+}
+
+function compileWebGLShader(shaderSelector, shaderType) {
+  const source = document.querySelector(shaderSelector).innerText;
+  const shader = gl.createShader(shaderType);
+  gl.shaderSource(shader, source);
+  gl.compileShader(shader);
+
+  const status = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+  if (!status) {
+    const errorText = `Shader ${shaderSelector} failed to compile.`;
+    console.error(errorText);
+    console.error(gl.getShaderInfoLog(shader));
+    throw new Error(errorText);
+  }
+
+  return shader;
+}
+
+function compileWebGLProgram(vertexShaderSelector, fragmentShaderSelector) {
+  const vertexShader = compileWebGLShader(
+      vertexShaderSelector, gl.VERTEX_SHADER);
+
+  const fragmentShader = compileWebGLShader(
+      fragmentShaderSelector, gl.FRAGMENT_SHADER);
+
+  const program = gl.createProgram();
+  gl.attachShader(program, vertexShader);
+  gl.attachShader(program, fragmentShader);
+  gl.linkProgram(program);
+  gl.detachShader(program, vertexShader);
+  gl.detachShader(program, fragmentShader);
+  gl.deleteShader(vertexShader);
+  gl.deleteShader(fragmentShader);
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    const linkErrLog = gl.getProgramInfoLog(program);
+    const errorText = "Shader program did not link successfully. Error log: " +
+                      linkErrLog;
+    throw new Error(errorText);
+  }
+
+  return program;
+}
+
+function setupWebGL() {
+  const canvas = document.getElementById("satellite");
+  gl = canvas.getContext('webgl2');
+
+  scene.program = compileWebGLProgram("#vshader", "#fshader");
+  scene.postProgram = compileWebGLProgram("#vshaderpost", "#fshaderpost");
+
+  scene.locPosition = gl.getAttribLocation(scene.program, "position");
+  scene.locTexCoord = gl.getAttribLocation(scene.program, "aTextureCoord");
+  scene.locRoadPos = gl.getUniformLocation(scene.program, "roadPos");
+
+  scene.locPostPosition = gl.getAttribLocation(scene.postProgram, "position");
+  scene.locPostTexCoord =
+     gl.getAttribLocation(scene.postProgram, "aTextureCoord");
+  scene.locPostSeed = gl.getUniformLocation(scene.postProgram, "seed");
+  scene.locPostSpeed = gl.getUniformLocation(scene.postProgram, "speed");
+  scene.locPostNoiseLevel =
+    gl.getUniformLocation(scene.postProgram, "noiseLevel");
+
+  scene.texRoad = loadTexture("pack.png");
+
+  scene.texFrame = makeFrameTexture(gl.canvas.width, gl.canvas.height);
+  scene.frameBuffer = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, scene.frameBuffer);
+  gl.framebufferTexture2D(
+      gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, scene.texFrame, 0);
+
+  scene.vertexBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, scene.vertexBuffer);
+
+  scene.texCoordBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, scene.texCoordBuffer);
+
+
+  scene.indexBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, scene.indexBuffer);
+
+  scene.vertexPostBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, scene.vertexPostBuffer);
+
+  scene.texCoordPostBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, scene.texCoordPostBuffer);
+
+  scene.indexPostBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, scene.indexPostBuffer);
+}
+
+function addQuad(geometry, x, y, w, h, u, v, uw, vh) {
+  const idx = geometry.va.length / 2 | 0;
+
+  geometry.va.push(...[
+    x, y + h,
+    x, y,
+    x + w, y,
+    x + w, y + h
+  ]);
+
+  geometry.ta.push(...[
+    u, v + vh,
+    u, v,
+    u + uw, v,
+    u + uw, v + vh
+  ]);
+
+  geometry.ia.push(...[
+    idx,
+    idx + 1,
+    idx + 2,
+    idx + 2,
+    idx + 3,
+    idx
+  ]);
+}
+
+function addCar(geometry, type, x, y) {
+  const w = 64 / 792 * 2;
+  const h = 64 / 128 * 2;
+  const u = (64 * type + 1) / 1024;
+  const v = 129 / 256;
+  const uw = 62 / 1024;
+  const vh = 62 / 256;
+
+  addQuad(geometry,
+          x - w / 2, y - h / 2, w, h,
+          u, v, uw, vh);
+}
+
+function prepareScene() {
+  const geometry = {
+    va: [],  // Vertex array.
+    ta: [],  // Texture coordinate array,
+    ia: []   // Index array.
+  };
+
+  addQuad(geometry,
+          -1, -1, 2, 2,
+          0, 0, 0.75, 0.5);
+
+  addCar(
+      geometry, 5,
+      (ctx.pX - ctx.carOffset) * 0.04, (ctx.pY - 1.5) * 0.53 + 0.05);
+
+  const carCount = ctx.carLocations.length;
+  const yPos = [-0.4725, 0, 0.5625];
+  for (let i = 0; i < carCount; i++) {
+    const car = ctx.carLocations[i];
+    addCar(
+      geometry, car[2],
+      (car[0] - ctx.carOffset + Math.sin(ctx.time + i) * 0.25) * 0.04,
+      yPos[car[1]] + Math.cos(ctx.time + i * 7) * 0.025
+    );
+  }
+
+
+  scene.vertexArray = new Float32Array(geometry.va);
+  scene.texCoordArray = new Float32Array(geometry.ta);
+  scene.indexArray = new Uint16Array(geometry.ia);
+}
+
+function drawMainGL(timeDelta) {
+  gl.bindFramebuffer(gl.FRAMEBUFFER, scene.frameBuffer);
+
+  gl.useProgram(scene.program);
+  gl.clearColor(1.0, 0.0, 1.0, 1.0);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+  prepareScene();
+
+  gl.bindTexture(gl.TEXTURE_2D, scene.texRoad);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, scene.vertexBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, scene.vertexArray, gl.DYNAMIC_DRAW);
+  gl.enableVertexAttribArray(scene.locPosition);
+  gl.vertexAttribPointer(scene.locPosition, 2, gl.FLOAT, false, 0, 0);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, scene.texCoordBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, scene.texCoordArray, gl.DYNAMIC_DRAW);
+  gl.enableVertexAttribArray(scene.locTexCoord);
+  gl.vertexAttribPointer(scene.locTexCoord, 2, gl.FLOAT, false, 0, 0);
+
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, scene.indexBuffer);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, scene.indexArray, gl.DYNAMIC_DRAW);
+
+  gl.uniform1f(scene.locRoadPos, scene.roadPos);
+
+  gl.drawElements(
+      gl.TRIANGLES, scene.indexArray.length, gl.UNSIGNED_SHORT, 0);
+
+  gl.disable(gl.BLEND);
+
+}
+
+function drawPostGL(timeDelta) {
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.useProgram(scene.postProgram);
+  gl.clearColor(0.0, 1.0, 1.0, 1.0);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  const vertexArray = new Float32Array([
+    -1, 1,
+    -1, -1,
+    1, -1,
+    1, 1,
+  ]);
+
+  const texCoordArray = new Float32Array([
+    0.0, 0.0,
+    0.0, 1.0,
+    1.0, 1.0,
+    1.0, 0.0,
+  ]);
+
+  const indexArray = new Uint16Array([
+    0, 1, 2, 2, 3, 0
+  ]);
+
+  gl.uniform1i(scene.locPostSeed, Math.random() * 26083 | 0);
+  gl.uniform1i(scene.locPostSpeed, scene.postSpeed);
+  gl.uniform1f(scene.locPostNoiseLevel, scene.noiseLevel);
+
+  gl.bindTexture(gl.TEXTURE_2D, scene.texFrame);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, scene.vertexPostBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, vertexArray, gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(scene.locPostPosition);
+  gl.vertexAttribPointer(scene.locPostPosition, 2, gl.FLOAT, false, 0, 0);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, scene.texCoordPostBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, texCoordArray, gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(scene.locPostTexCoord);
+  gl.vertexAttribPointer(scene.locPostTexCoord, 2, gl.FLOAT, false, 0, 0);
+
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, scene.indexPostBuffer);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
+
+  gl.drawElements(
+      gl.TRIANGLES, indexArray.length, gl.UNSIGNED_SHORT, 0);
+
+}
+
+function drawFrameGL(timeDelta) {
+  drawMainGL(timeDelta);
+  drawPostGL(timeDelta);
+}
+
+function redrawFrame(timestamp) {
+  const timeDelta = ctx.timestamp === null ?
+                        0.01 : (timestamp - ctx.timestamp) / 1000;
+  ctx.time = timestamp / 1000;
+
+  // Cap at 200 frames.
+  if (timeDelta < 1.0 / 200.0) {
+    window.requestAnimationFrame(redrawFrame);
+    return;
+  }
+
+  ctx.timestamp = timestamp;
+  progressLogic(timeDelta);
+  drawFrameGL(timeDelta);
+  window.requestAnimationFrame(redrawFrame);
+}
+
+function generateCarLocations() {
+  const locs = [];
+
+  setRandomSeed(Math.random() * 31337 | 0);
+  const carTypeSeed = Math.random() * 31337 | 0;
+  for (let i = 0; i < 80; i++) {
+    const emptySpot = getRandom(0, 2);
+    for (let j = 0; j < 3; j++) {
+      if (j == emptySpot) {
+        continue;
+      }
+
+      locs.push([10 + i * 14 + ((carTypeSeed + i * 7 + j * 5) % 3 - 1) / 4,
+                 j,
+                 (carTypeSeed + i * 7 + j * 3) % 5 ]);
+    }
+  }
+
+  ctx.carLocations = locs;
+  ctx.carOffset = 12;
+}
+
+function progressRunningLogic(timeDelta) {
+  scene.postSpeed = Math.min(15, scene.postSpeed + timeDelta * 30);
+
+  ctx.pX += timeDelta * SPEED;
+  ctx.carOffset += timeDelta * SPEED;
+  const idx = ctx.pX | 0;
+
+  if (idx + 1 >= ctx.calcPositions.length) {
+    let v = "";
+    for (let i = 0; i < 40; i++) {
+      v += `${ctx.calcPositions[10 + 14 + i * 28 - 4] - 0.5 | 0}`;
+    }
+
+    validateSolution(v).then(res => {
+      if (res) {
+        showFlag(res);
+        setVictory();
+      } else {
+        showFlag("Something went wrong. Trying to cheat?");
+        setReconnecting();
+      }
+    });
+
+    setRunning(false);
+    return;
+  }
+
+  const tY0 = ctx.calcPositions[idx];
+  const tY1 = ctx.calcPositions[idx + 1];
+
+  let error = null;
+
+  if (typeof(tY0) === "string") {
+    error = tY0;
+  }
+
+  if (typeof(tY1) === "string") {
+    error = tY1;
+  }
+
+  if (error !== null) {
+    console.log(error);
+    showError(error);
+    setRunning(false);
+    setCrashed();
+    return;
+  }
+
+  const delta = tY1 - tY0;
+  const off = ctx.pX % 1.0;
+  const finalY = tY0 + delta * off;
+  ctx.pY = finalY;
+
+
+}
+
+function progressLogic(timeDelta) {
+  if (ctx.fadeIn) {
+    scene.noiseLevel += timeDelta * FADE_SPEED;
+    if (scene.noiseLevel > 512) {
+      scene.noiseLevel = 512;
+      ctx.fadeIn = false;
+      if (ctx.fadeInCb) {
+        ctx.fadeInCb();
+        ctx.fadeInCb = null;
+      }
+    }
+  }
+
+  if (ctx.fadeOut) {
+    scene.noiseLevel -= timeDelta * FADE_SPEED;
+    if (scene.noiseLevel < 1) {
+      scene.noiseLevel = 1;
+      ctx.fadeOut = false;
+      if (ctx.fadeOutCb) {
+        ctx.fadeOutCb();
+        ctx.fadeOutCb = null;
+      }
+    }
+  }
+
+  if (ctx.running) {
+    progressRunningLogic(timeDelta);
+  } else {
+    scene.postSpeed = Math.max(0, scene.postSpeed - timeDelta * 75);
+  }
+
+  scene.roadPos = (scene.roadPos + (scene.postSpeed + 1) * timeDelta / 16) % 1.0;
+}
+
+async function sha1(data) {
+  const hashBuffer = await crypto.subtle.digest("SHA-1", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function sha256(data) {
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function validateSolution(s) {
+  const enc = new TextEncoder();
+  const k = enc.encode(s);
+
+  const check = await sha256(k);
+  if (check === "fe1784993d8f1b5feba69378ed6e684337c6da5864c9c8a77fb02ff29213f1be") {
+    const flag = await sha1(k);
+    return "CTF{" + flag + "}";
+  }
+
+  return false;
+}
+
+function compileUserFunction() {
+  const editorElement = document.getElementById("editor");
+  const code = editorElement.value;
+
+  let f = null;
+  try {
+    f = new Function("scanArray", code);
+  } catch (error) {
+    console.error(error);
+    showError(error.stack);
+
+    return null;
+  }
+
+  return f;
+}
+
+function getCarDistance(x, y) {
+  if (y < 0 || y >= 3) {
+    return 0;
+  }
+
+  const carCount = ctx.carLocations.length;
+  const lane = y | 0;
+  for (let i = 0; i < carCount; i++) {
+    const carX = ctx.carLocations[i][0];
+    const carY = ctx.carLocations[i][1];
+    const carDist = carX - x;
+    if (carDist < -2) {
+      continue;
+    }
+
+    if (carY != lane) {
+      continue;
+    }
+
+    return carDist;
+  }
+
+  return 1000;
+}
+
+function generateScanArray(x, y) {
+  const scanArray = [];
+  const scanCount = SCAN_COUNT;
+
+  for (let i = 0, py = y - 1 / 3; i < scanCount; i++, py -= 1 / 3) {
+    scanArray.push(getCarDistance(x, py));
+  }
+  scanArray.reverse();
+  scanArray.push(getCarDistance(x, y));
+  for (let i = 0, py = y + 1 / 3; i < scanCount; i++, py += 1 / 3) {
+    scanArray.push(getCarDistance(x, py));
+  }
+
+  return scanArray;
+}
+
+function calcStepWorker() {
+  const newX = ctx.calcPositions.length;
+  let newY = ctx.calcPositions[newX - 1];
+
+  if (newX > ctx.carLocations[ctx.carLocations.length - 1][0] + 20) {
+    return false;
+  }
+
+  const scanArray = generateScanArray(newX, newY);
+
+  if (scanArray[SCAN_COUNT] < MIN_DIST) {
+    ctx.calcPositions.push("Emergency Abort! Car would crash!");
+    return false;
+  }
+
+  if (scanArray[SCAN_COUNT - 1] < MIN_DIST) {
+    ctx.calcPositions.push("Emergency Abort! Left wheel would crash!");
+    return false;
+  }
+
+  if (scanArray[SCAN_COUNT + 1] < MIN_DIST) {
+    ctx.calcPositions.push("Emergency Abort! Right wheel would crash!");
+    return false;
+  }
+
+  const decision = ctx.calcFunction(scanArray);
+  if (decision < 0) {
+    newY -= 0.25;
+  } else if (decision > 0) {
+    newY += 0.25;
+  } // Else stay at the same position.
+
+  if (newY < 0.5 || newY > 2.5) {
+    ctx.calcPositions.push("Emergency Abort! Would hit curb!");
+    return false;
+  }
+
+  ctx.calcPositions.push(newY);
+  return true;
+}
+
+function calcStep() {
+  const start = +new Date();
+  while (1) {
+    if (!calcStepWorker()) {
+      setRunning(true);
+      return;
+    }
+
+    const now = +new Date();
+    if (now - start >= 10) {
+      break;
+    }
+  }
+
+  setTimeout(calcStep, 0);
+}
+
+function execute() {
+  const f = compileUserFunction();
+  if (f === null) {
+    setRunning(false);
+    return;
+  }
+
+  ctx.calcFunction = f;
+  ctx.calcPositions = [1.5];
+  ctx.calcProgress = 0;
+  ctx.pX = 0;
+
+  calcStep();  // Start the chain.
+}
+
+function setReconnecting() {
+  const executeButtonElement = document.getElementById("execute");
+  executeButtonElement.innerText = "Reconnecting...";
+  executeButtonElement.disabled = true;
+}
+
+function setVictory() {
+  const executeButtonElement = document.getElementById("execute");
+  executeButtonElement.innerText = "Good Work!";
+  executeButtonElement.disabled = true;
+}
+
+function setRunning(state) {
+  ctx.running = state;
+
+  const executeButtonElement = document.getElementById("execute");
+  executeButtonElement.disabled = false;
+  if (state) {
+    executeButtonElement.innerText = "Abort!";
+  } else {
+    executeButtonElement.innerText = "Engage Re-programmed Self-Driving Mode!";
+  }
+}
+
+function setCrashed() {
+  ctx.crashed = true;
+  const executeButtonElement = document.getElementById("execute");
+  executeButtonElement.innerText = "Reset";
+  executeButtonElement.disabled = false;
+}
+
+function reset() {
+  setReconnecting();
+  ctx.fadeOutCb = () => {
+    generateCarLocations();
+    ctx.pX = 0;
+    ctx.pY = 1.5;
+    ctx.fadeInCb = () => {
+      ctx.crashed = false;
+      setRunning(false);
+    }
+    ctx.fadeIn = true;
+  }
+  ctx.fadeOut = true;
+}
+
+function abortExecute() {
+  setRunning(false);
+  setCrashed();
+}
+
+function onExecuteClick() {
+  if (ctx.crashed) {
+    reset();
+    return;
+  }
+
+  if (ctx.running) {
+    abortExecute();
+    return;
+  }
+
+  execute();
+}
+
+function showFlag(flag) {
+  const flagElement = document.getElementById("flag");
+  flagElement.style = "display: block;";
+  flagElement.innerText = flag;
+}
+
+function hideError() {
+  const leftDescElement = document.getElementById("leftdesc");
+  leftDescElement.style = "display: block;";
+
+  const leftErrorElement = document.getElementById("error");
+  leftErrorElement.style = "display: none;";
+}
+
+function showError(s) {
+  const leftDescElement = document.getElementById("leftdesc");
+  leftDescElement.style = "display: none;";
+
+  const leftErrorTextElement = document.getElementById("errortext");
+  leftErrorTextElement.innerText = s;
+
+  const leftErrorElement = document.getElementById("error");
+  leftErrorElement.style = "display: block;";
+}
+
+function saveEditor() {
+  const editorElement = document.getElementById("editor");
+  const code = editorElement.value;
+  localStorage.setItem("code", code);
+}
+
+function loadEditor() {
+  const editorElement = document.getElementById("editor");
+  editorElement.value = localStorage.getItem("code") || "";
+}
+
+function main() {
+  if (window.crypto && !window.crypto.subtle && window.crypto.webkitSubtle) {
+    window.crypto.subtle = window.crypto.webkitSubtle;
+  }
+
+  setupWebGL();
+  window.requestAnimationFrame(redrawFrame);  // Start rendering.
+
+  setRunning(false);
+  reset();
+
+  const executeButtonElement = document.getElementById("execute");
+  executeButtonElement.addEventListener("click", onExecuteClick);
+
+  const errorCloseButtonElement = document.getElementById("errorclose");
+  errorCloseButtonElement.addEventListener("click", hideError);
+
+  const editorElement = document.getElementById("editor");
+  loadEditor();
+  editorElement.addEventListener("input", saveEditor);
+}
+
+window.addEventListener("DOMContentLoaded", main, false);
+
+  </script>
+
+</body></html>
