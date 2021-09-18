@@ -10,6 +10,8 @@ There's one folder for each challenge. There I include all relevant files that y
 
 Each challenge also has a story, which I include at the beginning. The story is very loose but it does at times gives hints about how to solve the challenge.
 
+For all challenges I used Chrome and Debian Linux.
+
 ## Disclaimers
 
 Depending on when you read this post, the servers may still be up and verifying flags, as there was no official end date. But most likely they'll be down. However, several challenges are solvable offline and you can verify with the flags in the repo, even without the server.
