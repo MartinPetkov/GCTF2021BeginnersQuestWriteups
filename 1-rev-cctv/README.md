@@ -61,8 +61,9 @@ None of the modifications are irreversible:
 * [`Array.from()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from) simply turns a string into an array of characters.
 * `0xCafe +` adds a static value, which can be subtracted.
 * [`String.prototype.charCodeAt()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/charCodeAt) has the complementary function [`String.fromCharCode()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/fromCharCode), found in the "See also" section.
+* The lines in the if statement check characters out of order but this can be corrected.
 
-The lines if the if statement check characters out of order but this can be corrected. I went with the simplest solution and manually ran the following JavaScript in the Dev Tools console:
+I went with the simplest solution and manually ran the following JavaScript in the Dev Tools console:
 
 ```js
 > var key = [52037, 52077, 52077, 52066, 52046, 52063, 52081, 52081, 52085, 52077, 52080, 52066];
