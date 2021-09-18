@@ -8,6 +8,8 @@ This repository contains writeups for my solutions to all the challenges in the 
 
 There's one folder for each challenge. There I include all relevant files that you receive as a participant, a step-by-step writeup of how I solved it, a solve script (where feasible), and finally the flag itself. I also try to describe my intuition and how one might approach this kind of problem, as I feel that this is the key skill that CTFs help you develop.
 
+Each challenge also has a story, which I include at the beginning. The story is very loose but it does at times gives hints about how to solve the challenge.
+
 ## Disclaimers
 
 Depending on when you read this post, the servers may still be up and verifying flags, as there was no official end date. But most likely they'll be down. However, several challenges are solvable offline and you can verify with the flags in the repo, even without the server.
