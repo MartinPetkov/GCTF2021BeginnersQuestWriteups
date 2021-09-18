@@ -21,7 +21,7 @@ Archive:  logic-lock.zip
 
 Let's look at the image:
 
-![Logic gates](logic-log.png)
+![Logic gates](logic-lock.png)
 
 It's a set of logic gates with the inputs labeled with the letters A-J. At the bottom it says that the flag is the inputs that need to be set, sorted and enclosed in `CTF{}`.
 
