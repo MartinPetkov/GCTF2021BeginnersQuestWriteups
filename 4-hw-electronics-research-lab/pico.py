@@ -1,44 +1,19 @@
 # Simulate just the pinouts as character bits.
 # No need to get an actual Raspberry Pi Pico or anything.
 
-import time
-
-
-gpios = [0, 0, 0, 0, 0, 0, 0, 0]
-flag = []
-
-
-def bin(num):
-  return format(num, '08b')
-
-def drive_pins(mask, value):
-  for i, bit in enumerate(bin(mask)):
-    if bit == '1':
-      gpios[i] = value
+gpios = 0
 
 def gpio_set_mask(mask):
-  '''
-  Drive high every GPIO appearing in mask.
-
-  Parameters
-    mask  Bitmask of GPIO values to set, as bits 0-29
-  '''
-  drive_pins(mask, 1)
+  global gpios
+  gpios = gpios ^ mask
 
 def gpio_clr_mask(mask):
-  '''
-  Drive low every GPIO appearing in mask.
-
-  Parameters
-    mask  Bitmask of GPIO values to set, as bits 0-29
-  '''
-  drive_pins(mask, 0)
+  global gpios
+  gpios = gpios & (~mask)
 
 def sleep_us(n):
-  bits = ''.join([str(g) for g in gpios])
-  c = chr(int(bits, 2))
-  print(f'{bits} -> {c}')
-  flag.append(c)
+  global gpios
+  print(chr(gpios), end="")
 
 
 # The C code from chal.c
@@ -180,9 +155,3 @@ sleep_us(100);
 gpio_set_mask(2);
 gpio_clr_mask(117);
 sleep_us(100);
-#gpio_put_all(0);
-#sleep_ms(500);
-
-
-
-print(''.join(flag))
