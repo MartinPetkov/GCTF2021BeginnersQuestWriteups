@@ -1,0 +1,13 @@
+Solution
+1. base65536 decode
+2. Convert to .jpg, run exif in CyberChef and extract the "Artist" tag (don't use the exif command line tool, it DOES NOT extract the full string)
+3. Run by compiling http://web.archive.org/web/20070906133127/http://www1.pacific.edu/~twrensch/evil/evil.java via https://www.jdoodle.com/online-java-compiler/
+4. Unhex it via CyberChef
+5. Un-zlib it, can do `pigz -d <chall.zlib >chall.gz`
+6. Un-gzip it with `gunzip chall.gz`
+7. Treat the resulting file as a Piet program, running it via https://github.com/jdherg/pyet, this outputs hex
+8. Un-hex it, this gives a zlib file
+9. Un-zlib it, this gives a file in https://esolangs.org/wiki/Nya~
+10. Run it via https://github.com/MichDem/Nya
+11. Convert it to base8 via CyberChef
+12. Treat that as brainfuck by converting according to https://esolangs.org/wiki/A
