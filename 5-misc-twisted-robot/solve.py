@@ -8,7 +8,10 @@ rc = RandCrack()
 # See https://github.com/tna0y/Python-random-module-cracker
 with open('robo_numbers_list.txt', 'r') as f:
   for line in f.readlines():
+    # Undo the formatting and the bit shift.
     recovered = int(line.strip().replace('-','')) - (1<<31)
+
+    # Feed the predictor.
     rc.submit(recovered)
 
 # Now the moment of truth, try predicting and decoding.
