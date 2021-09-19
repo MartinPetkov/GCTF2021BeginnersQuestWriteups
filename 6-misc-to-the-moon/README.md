@@ -11,7 +11,11 @@ Category: `misc`
 
 >This one is a doozie
 
-OH BOY they did not lie here. This was easily the most convoluted and guessy challenge of the entire CTF. I personally helped 10x as many people through this one specific challenge as I did for any other. I suspect if anyone found this repo, it was to see this writeup here. I'll give intuition where I can but honestly, I had several people help me and give me crucial nudges in at least 3 places where I got stuck so some of the steps will be "well you just have to guess right and have that flash of insight ¯\\_(ツ)_/¯"
+OH BOY they did not lie here. This was easily the most convoluted and guessy challenge of the entire CTF.
+
+I personally helped 10x as many people through this one specific challenge as I did for any other. I suspect if anyone found this repo, it was to see this writeup here.
+
+I'll give intuition where I can, but honestly I had several people help me and give me crucial nudges when I got stuck, so some of the steps will be "well you just have to guess right and have that flash of insight ¯\_(ツ)_/¯"
 
 Let's begin the adventure.
 
