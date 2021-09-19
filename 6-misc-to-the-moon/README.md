@@ -33,4 +33,54 @@ Archive:  to-the-moon.zip
 
 Let's look at the files and see what we're dealing with.
 
+First, the encodings:
+
+```
+I made a super secret encoder. I remember using:
+- a weird base, much higher than base64
+- a language named after a painter
+- a language that is the opposite of good
+- a language that looks like a rainbow cat
+- a language that is too vulgar to write here
+- a language that ended in 'ary' but I don't remember the full name
+
+I also use gzip and zlib (to compress the stuff) and I like hiding things in files...
+```
+
+Okay then. So the file `chall.txt` likely has to be transformed through each of these encodings before giving us the flag. Makes sense so far.
+
+The encodings keep talking about various odd languages so it's safe assume these aren't going to be ordinary languages but [esolangs](https://esolangs.org/).
+
+Let's do a bit of research on what each of these could mean. From now on, we'll keep running track of which encodings we've used, as presumably each is only used once.
+
+
+* [ ] A weird base, much higher than base64 **(base128? base1024? higher?)**
+* [ ] A language named after a painter **(probably [Piet](https://esolangs.org/wiki/Piet), first result from "esolang painter")**
+* [ ] A language that is the opposite of good **(??? bad language? PHP? JavaScript? maybe "bad" isn't the right antonym here)**
+* [ ] A language that looks like a rainbow cat **(nyan? [NyaScript](https://esolangs.org/wiki/NyaScript)?)**
+* [ ] A language that is too vulgar to write here **(almost definitely certainly probably [Brainfuck](https://esolangs.org/wiki/brainfuck))**
+* [ ] A language that ended in 'ary' but I don't remember the full name **(???)**
+* [ ] gzip and zlib compression **(no comment)**
+* [ ] Data hidden in a file **(no comment)**
+
+Okay, so maybe research wasn't so helpful here. But we have at least a few pointers, so let's get started. Maybe the data will give more clues.
+
+## Step 1: Starting File
+
 TODO
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
