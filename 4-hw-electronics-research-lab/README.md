@@ -62,11 +62,11 @@ int main(void)
 		gpio_set_mask(20);
 		gpio_clr_mask(3);
 		sleep_us(100);
-    gpio_set_mask(2);
+		gpio_set_mask(2);
 		gpio_clr_mask(16);
 		sleep_us(100);
-    ...
-    <more of the same>
+		...
+		<more of the same>
 
 		gpio_put_all(0);
 		sleep_ms(500);
@@ -78,7 +78,7 @@ int main(void)
 
 Let's try to understand each of these functions:
 
-* [`gpio_init`](https://raspberrypi.github.io/pico-sdk-doxygen/group__hardware__gpio.html#ga8aa4741d93dc40bc728dbd3e41813ad1) initialises the [GPIO pins](https://projects.raspberrypi.org/en/projects/physical-computing/1).
+* [`gpio_init`](https://raspberrypi.github.io/pico-sdk-doxygen/group__hardware__gpio.html#ga8aa4741d93dc40bc728dbd3e41813ad1) initializes the [GPIO pins](https://projects.raspberrypi.org/en/projects/physical-computing/1).
 * [`gpio_set_dir`](https://raspberrypi.github.io/pico-sdk-doxygen/group__hardware__gpio.html#ga6a40edf0d86f6b3f0dcb51a768cf4681) sets the GPIO "direction". I wasn't familiar with this term but since the argument is `GPIO_OUT`, I assume this means drive the signal out, not in.
 * [`gpio_put_all`](https://raspberrypi.github.io/pico-sdk-doxygen/group__hardware__gpio.html#ga7aa41e10d04a8d99d9a8c4d7ba5007b8) drives all pins, in this case to 0.
 * [`gpio_set_mask`](https://raspberrypi.github.io/pico-sdk-doxygen/group__hardware__gpio.html#gaf3aa12aa4543965e24f52cfa9b529904) drives high every GPIO in the mask, as a bitmask. I interpret that to mean that `67`, which is `01000011` in binary, drives pins 1, 6 and 7.
@@ -112,9 +112,9 @@ We don't want to do this all by hand, there are way too many lines. And we're co
 
 My go-to for CTFs is Python, as it's ergonomic and very easy to write quick and simple scripts in.
 
-If you look over the operations, you realize that `gpio_set_mask` is just a bitwise OR and `gpio_clr_mask` is just a bitwise NAND. Python supports [bitwise operations](https://www.geeksforgeeks.org/python-bitwise-operators/), so let's use a plain int for the "pins".
+If you look closely at the operations, you may realize that `gpio_set_mask` is just a bitwise OR and `gpio_clr_mask` is just a bitwise NAND. Python supports [bitwise operations](https://www.geeksforgeeks.org/python-bitwise-operators/), so let's use a plain int for the "pins".
 
-As usual I went for the simplest solution. I copied the pin setting lines to a Python program, used a global variable for the pins, and defined functions with the same names which modify the pins. Sleep just outputs the character. It looks like this:
+As usual I went for the simplest solution. I copied the pin-setting lines to a Python program, used a global variable for the pins, and defined functions with the same names which modify the pins. Sleep just outputs the character. It looks like this:
 
 ```python3
 gpios = 0
@@ -143,6 +143,8 @@ gpio_clr_mask(16);
 sleep_us(100);
 ...
 ```
+
+See the full file in [pico.py](pico.py).
 
 Running this happily produces the flag:
 
