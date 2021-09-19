@@ -16,4 +16,4 @@ For all challenges I used Chrome and Debian Linux.
 
 Depending on when you read this post, the servers may still be up and verifying flags, as there was no official end date. But most likely they'll be down. However, several challenges are solvable offline and you can verify with the flags in the repo, even without the server.
 
-I received a lot of help and helpful nudges by people in the [official Discord channel](https://discord.com/channels/856899439833382935/880198649999683585). Huge thank you to everyone who helpd me through and did your best not to just give the answer away!
+I received a lot of help and helpful nudges by people in the [official Discord channel](https://discord.com/channels/856899439833382935/880198649999683585). Huge thank you to everyone who helped me through and did your best not to just give the answer away!
