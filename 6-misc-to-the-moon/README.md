@@ -428,7 +428,7 @@ $ head chall.from_nyan
 440697918422363183397548356115174111979967632241756381461523275762611555565044345243686920364972358787309560456318193690287799624872508559490789890532367282472832564379215298488385593860832849627398865422864710999039787979733217240717198641619578634620231344233376325369569117210379679868602299244468387044128773681334105139544596909148571184763654886495124023818825988036876333149722377075577809087358356951704469327595398462722928801
 ```
 
-This is probably our next value, but let's save our progress.
+This is probably our next value, so let's save our progress.
 
 
 **The file is [chall.from_nyan](chall.from_nyan)**
@@ -436,7 +436,7 @@ This is probably our next value, but let's save our progress.
 * [X] <strike>A weird base, much higher than base64</strike> (base65536)
 * [X] <strike>A language named after a painter</strike> ([Piet](https://esolangs.org/wiki/Piet))
 * [X] <strike>A language that is the opposite of good</strike> ([evil](https://esolangs.org/wiki/Evil))
-* [X] <strike>A language that looks like a rainbow cat</strike>
+* [X] <strike>A language that looks like a rainbow cat</strike> ([nya~](https://esolangs.org/wiki/nya~))
 * [ ] A language that is too vulgar to write here
 * [ ] A language that ended in 'ary' but I don't remember the full name
 * [X] <strike>gzip and zlib compression</strike>
@@ -481,7 +481,7 @@ After much time on CyberChef trying out every base and squinting hard, I noticed
 16370637122222260222222222213702222222412602222222222137022222224126033333333331370333341222226022222222221370222412603333333333137034160333333333313703333412222260333333333313703333333416022222222221370241222222602222222222137022241222222603333333333137033334122226022222222221370222241260222222222213702222241222222603333333333137033412222602222222222137022222224126022222222221370222241222222603333333333137034160222222222213702222412222226022222222221370224126022222222221370241
 ```
 
-Why is this peculiar? Becuase I've seen Brainfuck before, and I know it often has long runs of `-----` or `+++++`, and here I see similar runs of `22222` and `33333`. Could this be Brainfuck represented in base8? It's a long shot but let's explore it, why not. Nothing else has worked so far.
+Why is this peculiar? Because I've seen Brainfuck before, and I know it often has long runs of `-----` or `+++++`, and here I see similar runs of `22222` and `33333`. Could this be Brainfuck represented in base8? It's a long shot but let's explore it, why not. Nothing else has worked so far.
 
 Googling "base 8 brainfuck esolang" actually does gives some results. And wouldn't you know it, one of those is [Unary](https://esolangs.org/wiki/Unary), an -ary language! Now, the language itself is kind of silly (it's entirely 0s), but there's a crucial piece of information at the top:
 
@@ -519,13 +519,24 @@ $ cat chall.brainfuck
 ]<].-<].,<<<<<-><<<<<<<<<<>,].<<<<<<<+>,-><<<<<<<<<<>,].<<<<<<<+>,-><,,,,,,,,,.,].<,,,[>,<<<<-><<<<<<<<<<>,].<<<+>,-><,,,,,,,,,.,].<[>]><,,,,,,,,,.,].<,,,[>,<<<<-><,,,,,,,,,.,].<,,,,,,[>]><<<<<<<<<<>,].<+>,<<<<<-><<<<<<<<<<>,].<<<+>,<<<<<-><,,,,,,,,,.,].<,,,[>,<<<-><<<<<<<<<<>,].<<<<+>,-><<<<<<<<<<>,].<<<<<+>,<<<<<-><,,,,,,,,,.,].<,[>,<<<-><<<<<<<<<<>,].<<<<<<<+>,-><<<<<<<<<<>,].<<<<+>,<<<<<-><,,,,,,,,,.,].<[>]><<<<<<<<<<>,].<<<<+>,<<<<<-><<<<<<<<<<>,].<<+>,-><<<<<<<<<<>,].<+>
 ```
 
-Let's run it in [copy.sh/brainfuck/](https://copy.sh/brainfuck/):
+Let's run it in [copy.sh/brainfuck/](https://copy.sh/brainfuck):
 
 ```
 Syntax error: Unexpected closing bracket in line 1 char 0.
 ```
 
 Well fuck.
+
+**The file is [chall.brainfuck](chall.brainfuck)**
+
+* [X] <strike>A weird base, much higher than base64</strike> (base65536)
+* [X] <strike>A language named after a painter</strike> ([Piet](https://esolangs.org/wiki/Piet))
+* [X] <strike>A language that is the opposite of good</strike> ([evil](https://esolangs.org/wiki/Evil))
+* [X] <strike>A language that looks like a rainbow cat</strike> ([nya~](https://esolangs.org/wiki/nya~))
+* [ ] A language that is too vulgar to write here
+* [X] <strike>A language that ended in 'ary' but I don't remember the full name</strike> ([Unary](https://esolangs.org/wiki/unary))
+* [X] <strike>gzip and zlib compression</strike>
+* [X] <strike>Data hidden in a file</strike> (hidden in the Artist tag of an image)
 
 ## Step 8: [Sweet Victory](https://www.youtube.com/watch?v=cUZNXgIXM1c)
 
@@ -544,6 +555,18 @@ $ cat chall.brainfuck
 ```
 
 This looks more promising. Let's run it.
+
+And finally, we're done!
+
+
+* [X] <strike>A weird base, much higher than base64</strike> (base65536)
+* [X] <strike>A language named after a painter</strike> ([Piet](https://esolangs.org/wiki/Piet))
+* [X] <strike>A language that is the opposite of good</strike> ([evil](https://esolangs.org/wiki/Evil))
+* [X] <strike>A language that looks like a rainbow cat</strike> ([nya~](https://esolangs.org/wiki/nya~))
+* [X] <strike>A language that is too vulgar to write here</strike> ([Brainfuck](https://esolangs.org/wiki/Brainfuck))
+* [X] <strike>A language that ended in 'ary' but I don't remember the full name</strike> ([Unary](https://esolangs.org/wiki/unary))
+* [X] <strike>gzip and zlib compression</strike>
+* [X] <strike>Data hidden in a file</strike> (hidden in the Artist tag of an image)
 
 The flag couldn't be more appropriate:
 
