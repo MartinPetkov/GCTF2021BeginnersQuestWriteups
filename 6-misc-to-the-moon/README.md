@@ -107,13 +107,13 @@ I'm not familiar with encodings beyond base64, but knowing that we computer scie
 * base256 - There's [this](https://github.com/aks-/base-256), but it doesn't really work
 * base512 - Can't find anything from a quick search
 * base1024 - Hmm, there's [ecoji](https://github.com/keith-turner/ecoji), but it also gives nonsense
-* base2048 - Hmm, there's [this](https://github.com/qntm/base2048), but it also doesn't really work.
+* base2048 - Hmm, there's [this](https://github.com/qntm/base2048), but it also doesn't really work
 
 But wait! What's this?
 
 ![Ultra mega high encoding](high_encoding.png)
 
-65536?! I've never even suspsected an encoding with this many bits exist but hell, why not, let's try it.
+65536?! I've never even suspected an encoding with this many bits exist but why not, let's try it.
 
 There is the [linked library](https://github.com/qntm/base65536), of course, (which I did in fact use in [decode.js](decode.js)), but Googling "base65536 decoder" also turns up the [BetterConverter Base65536 Decode Online Tool](https://www.better-converter.com/Encoders-Decoders/Base65536-Decode). Let's try it.
 
@@ -121,7 +121,7 @@ There is the [linked library](https://github.com/qntm/base65536), of course, (wh
 
 This looks more promising! Not only does it succeed, but you can kind of see a pattern in the hex. There's a funbh of values, then lots of 7s, 5s, 6s and 1s. Let's save our progress.
 
-* [X] A weird base, much higher than base64 **(base65536)**
+* [X] <strike>A weird base, much higher than base64 (base65536)</strike>
 * [ ] A language named after a painter **(probably [Piet](https://esolangs.org/wiki/Piet), first result from "esolang painter")**
 * [ ] A language that is the opposite of good **(??? bad language? PHP? JavaScript? maybe "bad" isn't the right antonym here)**
 * [ ] A language that looks like a rainbow cat **(nyan? [NyaScript](https://esolangs.org/wiki/NyaScript)?)**
