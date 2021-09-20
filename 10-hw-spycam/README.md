@@ -156,21 +156,92 @@ I still don't have a real clue what this is, but the fact that it's video feed w
 
 ![Old schoool RGB cables](rgb_cables.jpg)
 
-I'm not a graphics or hardware person at all. I'm wholly unfamiliar with standards or protocols for transferring video. But it's not unreasonable to assume that maybe those last 3 channels are (0,255) style RGB values except normalized to a random float range for some hardware-related reason. Let's try to verify that guess.
+I'm not a graphics or hardware person at all. I'm wholly unfamiliar with standards or protocols for transferring video. But it's not unreasonable to assume that maybe those last 3 "channels" are (0,255) style RGB values except normalized to a random float range for some hardware-related reason. Let's try to verify that guess.
 
-TODO
+We'll normalize the values from (-0.5,0.5) to (0,255) with a little Python script ([convert_to_rgb_simple.py](convert_to_rgb_simple.py)):
 
+```python
+'''
+Try to treat the last 3 streams as "raw image data" for GIMP.
 
+For GIMP, a .data file is literally the bytes in order of RGB RGB RGB ...
 
+So, try to convert the last 3 streams of the CSV to RGB bytes and load into GIMP.
+'''
 
+# Normalize the range of -0.5 to 0.5
+# See https://stackoverflow.com/a/929107
+def normalize(color_val):
+  return int((float(color_val) + 0.5) * 255)
 
+# Process stdin
+with open(f'all.data', 'wb') as allf:
+  for i in range(1,8):
+    with open(f'{i}.csv', 'r') as f:
+      lines = f.readlines()
 
+    for line in lines:
+      line = line.strip()
+      _, _, R, G, B = line.split(',')
 
+      # Normalize
+      R, G, B = normalize(R), normalize(G), normalize(B)
 
+      # Write the bytes as RGB in order.
+      allf.write(R.to_bytes(1, byteorder='little', signed=False))
+      allf.write(G.to_bytes(1, byteorder='little', signed=False))
+      allf.write(B.to_bytes(1, byteorder='little', signed=False))
+```
 
+The values are written out as plain bytes, since I'm using GIMP and it supports loading [raw image data](https://stackoverflow.com/a/32393367). Of course, since it doesn't have width or height information, we'll have to adjust that manually until we get something that looks like a picture.
 
+Here's the original:
 
+![Original all.data in GIMP](gimp_original.png)
 
+And here it is after fiddling with the width and height for a while:
 
+![Adjusted all.data in GIMP](gimp_adjusted.png)
 
+So there is definitely something here! Our intuition is correct, even if the conversion and normalization is clearly not exactly right.
 
+### Decoding the video feed
+
+I can't really make out much in these frames. With zooming in, all I can see written on the board is this:
+
+```
+CTF{V1de0G
+```
+
+Which looks like English. It's "video g\<something\>".
+ 
+At this point I have to admit that I was stuck, until a helpful stranger on Discord showed me this version of the video feed that they had somehow construed (my best attempt at recording their approach is in [convert_to_rgb.py](convert_to_rgb.py)):
+
+![OCR layer from the video feed](ocr.png)
+
+I didn't add the OCR, that's just part of the image. It gives a huge clue, suggesting that what's written on the board is this:
+
+```
+CTF|V1de0_g?aphi?s_4???y|
+```
+
+Now obviously some of that is wrong. For one, `CTF||` should be `CTF{}`. For another, we could make out that the 'g' is actually uppercase 'G'. So let's treat this as just a clue.
+
+Clearly this is written in [leetspeak](https://en.wikipedia.org/wiki/Leet). I'm not sure how you'd intuit this without already knowing about it, except by squinting and seeing that a "4" kind of looks like an "A", a "0" kind of looks like an "o", etc.
+
+### Guessing the flag
+
+So the flag is some variation of "Video_Graphics_Array", which gives the final clue - this signal was probably [VGA](https://en.wikipedia.org/wiki/Video_Graphics_Array). But at this point I'm not going to write or find a VGA decoder, we can just make educated guesses.
+
+How? Well:
+
+* There's no common leet equivalent for 'c' or 'r'. Those are probably just 'c' and 'r'.
+* The letters look like they're lowercase except the first letter, like an acronym. So let's assume lowercase 'c' and 'r'.
+* The first 'g' is actually 'G'.
+* The 'a' in "array" could be an "a" or a "4".
+
+We're left with very few probable variations. Sure enough we find the flag on the second try.
+
+```
+CTF{V1de0_Graphics_4rr4y}
+```
