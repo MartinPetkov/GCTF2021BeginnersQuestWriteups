@@ -124,11 +124,11 @@ This looks more promising! Not only does it succeed, but you can kind of see a p
 **The file is [chall.base65536_decoded](chall.base65536_decoded)**
 
 * [X] <strike>A weird base, much higher than base64</strike> (base65536)
-* [ ] A language named after a painter **(probably [Piet](https://esolangs.org/wiki/Piet), first result from "esolang painter")**
-* [ ] A language that is the opposite of good **(??? bad language? PHP? JavaScript? maybe "bad" isn't the right antonym here)**
-* [ ] A language that looks like a rainbow cat **(nyan? [NyaScript](https://esolangs.org/wiki/NyaScript)?)**
-* [ ] A language that is too vulgar to write here **(almost definitely certainly probably [Brainfuck](https://esolangs.org/wiki/brainfuck))**
-* [ ] A language that ended in 'ary' but I don't remember the full name **(???)**
+* [ ] A language named after a painter
+* [ ] A language that is the opposite of good
+* [ ] A language that looks like a rainbow cat
+* [ ] A language that is too vulgar to write here
+* [ ] A language that ended in 'ary' but I don't remember the full name
 * [ ] gzip and zlib compression
 * [ ] Data hidden in a file
 
@@ -192,15 +192,85 @@ Well now! This looks like what we're actually looking for. It goes on for many m
 **The file is [chall.from_artist](chall.from_artist)**
 
 * [X] <strike>A weird base, much higher than base64</strike> (base65536)
-* [ ] A language named after a painter **(probably [Piet](https://esolangs.org/wiki/Piet), first result from "esolang painter")**
-* [ ] A language that is the opposite of good **(??? bad language? PHP? JavaScript? maybe "bad" isn't the right antonym here)**
-* [ ] A language that looks like a rainbow cat **(nyan? [NyaScript](https://esolangs.org/wiki/NyaScript)?)**
-* [ ] A language that is too vulgar to write here **(almost definitely certainly probably [Brainfuck](https://esolangs.org/wiki/brainfuck))**
-* [ ] A language that ended in 'ary' but I don't remember the full name **(???)**
+* [ ] A language named after a painter
+* [ ] A language that is the opposite of good
+* [ ] A language that looks like a rainbow cat
+* [ ] A language that is too vulgar to write here
+* [ ] A language that ended in 'ary' but I don't remember the full name
 * [ ] gzip and zlib compression
 * [X] <strike>Data hidden in a file</strike> (hidden in the Artist tag of an image)
 
 ## Step 3: The Artist string
+
+Okay, so what are we looking at here? How do you Google for "esolang zaeuw"? `file` is kind of useless:
+
+```sh
+$ file chall.from_artist
+chall.from_artist: ASCII text, with very long lines
+```
+
+Well, the least we can do is the process of elimination. Let's look through the remaining clues:
+
+* It's definitely not Piet (it has to be an image).
+* It may be the "opposite of good" esolang.
+* It's probably not Nyan. If someone goes through the trouble of creating a Nyan-based language, you'd expect to see "nyan" in the syntax.
+* It's not Brainfuck. I know what that looks like and it's all symbols, not letters.
+* It's probably not the -ary language. This is a stretch but I would assume it's something like binary, trinary, quarternary, etc. and it would be based on the number of bits, but this has a clear character set.
+
+So let's close our eyes, spin around for 30s and go where we point. Let's try to find the "opposite of good" language.
+
+I have to admit I spun wheels here for hours. There are so many possible avenues to explore and I just could not think of a different antonym that made sense. [Googling it](https://www.wordhippo.com/what-is/the-opposite-of/good.html) leads me to "wicked", "disadvantaged", "terrible", and all other sorts of words. It wasn't until a former sufferer nudged me with the following: "The forces of good and ... ?"
+
+[Evil](https://esolangs.org/wiki/Evil)! It fits. All the letters we see are commands in this language. Let's try it.
+
+But how? We could write our own interpreter based on the wiki, but I have to believe someone has done it already. The challenge author wouldn't be so cruel as to make us have to successfully implement an obscure esolang.
+
+At the bottom of the wiki are several links, one of them to the [evil homepage on the Wayback Machine](http://web.archive.org/web/20070103000858/www1.pacific.edu/~twrensch/evil/index.html). This actually has a [Java implementation](http://web.archive.org/web/20070906133127/http://www1.pacific.edu/~twrensch/evil/evil.java) which you can run (albeit with an older JDK) and it will succeed.
+
+Well, as I learned, there also exists [esolang-box](https://github.com/hakatashi/esolang-box). In fact, this also explains why "evil" was chosen - it's literally the first example given. Let's try it.
+
+```sh
+$ docker run -v `pwd`:/code:ro esolang/evil evil /code/chall.from_artist
+srcPos .. 0 (chr z)
+whlPos .. 0 ,val 0
+srcPos .. 1 (chr a)
+whlPos .. 0 ,val 0
+srcPos .. 2 (chr e)
+whlPos .. 0 ,val 0
+srcPos .. 3 (chr e)
+whlPos .. 0 ,val 0
+...
+```
+
+Err..what?
+
+Looking through it a bit more shows a bunch of `chr` and `val` lines. This is probably the `w` command - "Writes A to output, as a character". Let's try to filter for this.
+
+Wait, let's actually try writing the output to a file. Maybe we're seeing the outputs of `stderr` and `stdout` mingling:
+
+```sh
+$ echo "$(docker run -v `pwd`:/code:ro esolang/evil evil /code/chall.from_artist)" > ./chall.from_evil
+<same logging as before>
+$ cat chall.from_evil
+789ced57695413591a7569c56e9155161d050511150111230a024d9b800328e368435340a28050dd519486180810daa...
+```
+
+Hey, what do you know, it worked. Well probably. There are some hex-y looking bytes here, which is probably correct. Let's save our progress.
+
+
+**The file is [chall.from_evil](chall.from_evil)**
+
+* [X] <strike>A weird base, much higher than base64</strike> (base65536)
+* [ ] A language named after a painter
+* [X] <strike>A language that is the opposite of good</strike> ([evil](https://esolangs.org/wiki/Evil))
+* [ ] A language that looks like a rainbow cat
+* [ ] A language that is too vulgar to write here
+* [ ] A language that ended in 'ary' but I don't remember the full name
+* [ ] gzip and zlib compression
+* [X] <strike>Data hidden in a file</strike> (hidden in the Artist tag of an image)
+
+
+## Step 4: The evil output
 
 TODO
 
