@@ -12,7 +12,7 @@ def normalize(float_color_val):
 
 # Process stdin
 with open(f'all.data', 'wb') as allf:
-  for i in range(7,8):
+  for i in range(1,8):
     with open(f'{i}.csv', 'r') as f:
       lines = f.readlines()
 
