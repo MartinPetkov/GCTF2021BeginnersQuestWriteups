@@ -272,7 +272,49 @@ Hey, what do you know, it worked. Well probably. There are some hex-y looking by
 
 ## Step 4: The evil output
 
-TODO
+Let's un-hex our last file and see what we're dealing with.
+
+```sh
+$ xxd -r -p chall.from_evil chall.from_evil_decoded
+$ file chall.from_evil_decoded
+chall.from_evil_decoded: zlib compressed data
+```
+
+Oh merciful forces, it's just plain zlib-compressed data. A surprise, to be sure, but a welcome one.
+
+Let's decompress it with [`pigz`](http://zlib.net/pigz/):
+
+```sh
+$ mv chall.from_evil_decoded chall.from_evil_decoded.zlib
+$ pigz -d <chall.from_evil_decoded.zlib >chall.from_evil_decoded.unknown
+$ file chall.from_evil_decoded.unknown
+evil-output.gz: gzip compressed data, last modified: Thu Jul 15 08:21:18 2021, max compression, original size modulo 2^32 701584
+```
+
+Awesome, another easy one. Let's gzip-decompress it:
+
+```sh
+$ mv chall.from_evil_decoded.unknown chall.from_evil_decoded.gz
+$ gzip -k -d chall.from_evil_decoded.gz
+$ file chall.from_evil_decoded
+chall.from_evil_decoded: Netpbm image data, size = 1827 x 128, rawbits, pixmap
+```
+
+This looks like something else. Let's save our progress.
+
+
+**The file is [chall.from_evil_decoded](chall.from_evil_decoded)**
+
+* [X] <strike>A weird base, much higher than base64</strike> (base65536)
+* [ ] A language named after a painter
+* [X] <strike>A language that is the opposite of good</strike> ([evil](https://esolangs.org/wiki/Evil))
+* [ ] A language that looks like a rainbow cat
+* [ ] A language that is too vulgar to write here
+* [ ] A language that ended in 'ary' but I don't remember the full name
+* [X] <strike>gzip and zlib compression</strike>
+* [X] <strike>Data hidden in a file</strike> (hidden in the Artist tag of an image)
+
+## Step 5: The evil image
 
 
 
