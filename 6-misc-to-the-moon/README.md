@@ -123,7 +123,7 @@ This looks more promising! Not only does it succeed, but you can kind of see a p
 
 **The file is [chall.base65536_decoded](chall.base65536_decoded)**
 
-* [X] <strike>A weird base, much higher than base64 (base65536)</strike>
+* [X] <strike>A weird base, much higher than base64</strike> (base65536)
 * [ ] A language named after a painter **(probably [Piet](https://esolangs.org/wiki/Piet), first result from "esolang painter")**
 * [ ] A language that is the opposite of good **(??? bad language? PHP? JavaScript? maybe "bad" isn't the right antonym here)**
 * [ ] A language that looks like a rainbow cat **(nyan? [NyaScript](https://esolangs.org/wiki/NyaScript)?)**
@@ -191,14 +191,14 @@ Well now! This looks like what we're actually looking for. It goes on for many m
 
 **The file is [chall.from_artist](chall.from_artist)**
 
-* [X] <strike>A weird base, much higher than base64 (base65536)</strike>
+* [X] <strike>A weird base, much higher than base64</strike> (base65536)
 * [ ] A language named after a painter **(probably [Piet](https://esolangs.org/wiki/Piet), first result from "esolang painter")**
 * [ ] A language that is the opposite of good **(??? bad language? PHP? JavaScript? maybe "bad" isn't the right antonym here)**
 * [ ] A language that looks like a rainbow cat **(nyan? [NyaScript](https://esolangs.org/wiki/NyaScript)?)**
 * [ ] A language that is too vulgar to write here **(almost definitely certainly probably [Brainfuck](https://esolangs.org/wiki/brainfuck))**
 * [ ] A language that ended in 'ary' but I don't remember the full name **(???)**
 * [ ] gzip and zlib compression
-* [X] <strike>Data hidden in a file</strike>
+* [X] <strike>Data hidden in a file</strike> (hidden in the Artist tag of an image)
 
 ## Step 3: The Artist string
 
