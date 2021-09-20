@@ -121,6 +121,8 @@ There is the [linked library](https://github.com/qntm/base65536), of course, (wh
 
 This looks more promising! Not only does it succeed, but you can kind of see a pattern in the hex. There's a funbh of values, then lots of 7s, 5s, 6s and 1s. Let's save our progress.
 
+**The file is [chall.base65536_decoded](chall.base65536_decoded)**
+
 * [X] <strike>A weird base, much higher than base64 (base65536)</strike>
 * [ ] A language named after a painter **(probably [Piet](https://esolangs.org/wiki/Piet), first result from "esolang painter")**
 * [ ] A language that is the opposite of good **(??? bad language? PHP? JavaScript? maybe "bad" isn't the right antonym here)**
@@ -132,7 +134,75 @@ This looks more promising! Not only does it succeed, but you can kind of see a p
 
 # Step 2: The base65536-decoded file
 
+So what are we actually looking at? It's hex bytes, so I tried putting it in Cyber Chef with "From Hex", which appears to work! We see the string ["JFIF"](https://en.wikipedia.org/wiki/JPEG_File_Interchange_Format) appear early on, so let's save this as the file [chall.base65536_decoded.png](chall.base65536_decoded.png). Sure enough, this is recognized as an image:
+
+```sh
+$ file chall.base65536_decoded.png
+chall.base65536_decoded.png: JPEG image data, JFIF standard 1.01, aspect ratio, density 1x1, segment length 16, Exif Standard: [TIFF image data, big-endian, direntries=5, xresolution=74, yresolution=82, resolutionunit=1], baseline, precision 8, 1131x707, components 3
+```
+
+![chall.base65536_decoded.png](chall.base65536_decoded.png)
+
+Hmm, this looks familiar. Where have we seen something like this during research? Oh, right! It looks like a Piet drawing. That is indeed one of the hints as well! So we win, right?
+
+Right?
+
+Well not so fast. On [npiet](https://www.bertnase.de/npiet/npiet-execute.php), it fails to execute:
+
+```
+cannot read from `npiet-execute/chall.base65536_decoded.png'; reason: unknown PPM format
+```
+
+[Pyet](https://github.com/jdherg/pyet) fails similarly.
+
+So this is a red herring, meant to throw us off the trail and foil our brave efforts to decode the secret. What do we do now?
+
+Wait a second, what's this in the clues...
+
+```
+I like hiding things in files...
+```
+
+Do you now? This is an image, and images have metadata. It's common in CTFs to put interesting info there. Surely not...
+
+```
+$ exiftool chall.base65536_decoded.png
+ExifTool Version Number         : 12.30
+File Name                       : chall.base65536_decoded.png
+Directory                       : .
+File Size                       : 85 KiB
+File Modification Date/Time     : 2021:09:19 20:51:54-04:00
+File Access Date/Time           : 2021:09:19 20:57:30-04:00
+File Inode Change Date/Time     : 2021:09:19 20:51:54-04:00
+File Permissions                : -rw-r-----
+File Type                       : JPEG
+File Type Extension             : jpg
+MIME Type                       : image/jpeg
+JFIF Version                    : 1.01
+Exif Byte Order                 : Big-endian (Motorola, MM)
+X Resolution                    : 1
+Y Resolution                    : 1
+Resolution Unit                 : None
+Artist                          : zaeeaeeuewawaweeeuuwaawuwueeuwaawuwaaawuuuuwuwuuuwaawaawaaaawueueeweeeweaeawuuwawaaaweeeuuweeuwawaaaeeeweeeeewueueewaaaawwuuuuwaaaaawuuuuuweeuewueueuuwaaaaawuuuuuwaaaaawuuuuwwwaaaawuuuuuwawwwawawuuuwaeeeweeuuwaawaawuea...
+```
+
+Well now! This looks like what we're actually looking for. It goes on for many many lines and clearly has a pattern, consisting only of the lettes `zaeuw`. Let's take another break.
+
+**The file is [chall.from_artist](chall.from_artist)**
+
+* [X] <strike>A weird base, much higher than base64 (base65536)</strike>
+* [ ] A language named after a painter **(probably [Piet](https://esolangs.org/wiki/Piet), first result from "esolang painter")**
+* [ ] A language that is the opposite of good **(??? bad language? PHP? JavaScript? maybe "bad" isn't the right antonym here)**
+* [ ] A language that looks like a rainbow cat **(nyan? [NyaScript](https://esolangs.org/wiki/NyaScript)?)**
+* [ ] A language that is too vulgar to write here **(almost definitely certainly probably [Brainfuck](https://esolangs.org/wiki/brainfuck))**
+* [ ] A language that ended in 'ary' but I don't remember the full name **(???)**
+* [ ] gzip and zlib compression
+* [X] <strike>Data hidden in a file</strike>
+
+## Step 3: The Artist string
+
 TODO
+
 
 
 
