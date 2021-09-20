@@ -67,11 +67,72 @@ Okay, so maybe research wasn't so helpful here. But we have at least a few point
 
 ## Step 1: Starting File
 
+Let's see what we have:
+
+```sh
+$ file chall.txt
+chall.txt: DOS executable (COM)
+```
+
+It's almost certainly not actually a DOS executable. That wasn't one of the encodings, and I kind of just hope I don't have to figure out how to run a DOS exuctable in the year 2021.
+
+```
+$ cat chall.txt
+魦浤魦敥攰攱阴欴渴欴攰昰昰攰攰昰攰昰攰攰魦晥昸阶樴洷渶欶攰攰餴餴攰防攰攰攰洰攰樰昰阱攰樰攰攰攰昰攰攰攰阴昰霱攰樰攰攰攰昰攰攰攰朵昰洲攰栰攰攰攰昰攰昰攰攰昰霳攰朰攰攰昸洰攰攰攰阵朰栱攰栰攰攰攰昰攰昰攰攰攰攰攰攰攰攰攰昰攰攰攰昰攰攰攰昰攰攰攰昰阷昶樶樶昶樶樶樷樶氷昶氷昶氷樶樶樶樷樷氷昶昶氷樷氷樷樶樶樷氷昶昶氷樷氷昶昶...
+```
+
+Oh.
+
+It can't possibly be this simple, but let's throw the first few characters into Google Translate with "Detect language" on:
+
+![Trying to translate chall.txt](translate.png)
+
+Wonderful.
+
+Let's ignore the Chinese characters then. That's probably my poor undeserving shell's best attempt at parsing the bytes.
+
+So which of the other encodings is it? It's naive to assume they're given in order, but honestly a high base encoding might make sense here.
+
+Let's try a few bases in [Cyber Chef](https://gchq.github.io/CyberChef/) (a wonderful tool, especially for CTFs). Unfortunately, it only goes as high as base85, and that gives this error:
+
+```
+From Base85 - Invalid character '魦' at index 0
+```
+
+Okay. It does say _much_ higher after all.
+
+I'm not familiar with encodings beyond base64, but knowing that computer science people are nerds, I'm going to guess encodings go up in powers of two. Let's Google around:
+
+* base128 - There's [this](https://stackoverflow.com/questions/6008047/why-is-base128-not-used) explaining why this is NOT a thing
+* base256 - There's [this](https://github.com/aks-/base-256), but it doesn't really work
+* base512 - Can't find anything from a quick search
+* base1024 - Hmm, there's [ecoji](https://github.com/keith-turner/ecoji), but it also gives nonsense
+* base2048 - Hmm, there's [this](https://github.com/qntm/base2048), but it also doesn't really work.
+
+But wait! What's this?
+
+![Ultra mega high encoding](high_encoding.png)
+
+65536?! I've never even suspsected an encoding with this many bits exist but hell, why not, let's try it.
+
+There is the [linked library](https://github.com/qntm/base65536), of course, (which I did in fact use in [decode.js](decode.js)), but Googling "base65536 decoder" also turns up the [BetterConverter Base65536 Decode Online Tool](https://www.better-converter.com/Encoders-Decoders/Base65536-Decode). Let's try it.
+
+![Decode base65536](base65536_decode.png)
+
+This looks more promising! Not only does it succeed, but you can kind of see a pattern in the hex. There's a funbh of values, then lots of 7s, 5s, 6s and 1s. Let's save our progress.
+
+* [X] A weird base, much higher than base64 **(base65536)**
+* [ ] A language named after a painter **(probably [Piet](https://esolangs.org/wiki/Piet), first result from "esolang painter")**
+* [ ] A language that is the opposite of good **(??? bad language? PHP? JavaScript? maybe "bad" isn't the right antonym here)**
+* [ ] A language that looks like a rainbow cat **(nyan? [NyaScript](https://esolangs.org/wiki/NyaScript)?)**
+* [ ] A language that is too vulgar to write here **(almost definitely certainly probably [Brainfuck](https://esolangs.org/wiki/brainfuck))**
+* [ ] A language that ended in 'ary' but I don't remember the full name **(???)**
+* [ ] gzip and zlib compression
+* [ ] Data hidden in a file
+
+# Step 2: The base65536-decoded file
+
 TODO
-
-
-
-
 
 
 
