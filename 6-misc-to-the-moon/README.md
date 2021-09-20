@@ -316,6 +316,73 @@ This looks like something else. Let's save our progress.
 
 ## Step 5: The evil image
 
+[Netpbm](https://en.wikipedia.org/wiki/Netpbm) is an set of graphics programs, it seems. They take PPM, PGM or PBM image formats.
+
+Why does this sound so familiar...
+
+```
+cannot read from `npiet-execute/chall.base65536_decoded.png'; reason: unknown PPM format
+```
+
+Oh right, the last time we tried to interpret a Piet program the error said it was looking for a PPM format. Well, this sounds like a clue.
+
+Let's save it as an image and try to run it on [npiet](https://www.bertnase.de/npiet/npiet-execute.php):
+
+```
+$ cp chall.from_evil_decoded chall.from_evil_decoded.png
+<after running on netpiet>
+789ce5d9bb11c3300c83e13e5b7a81f4693c7b7630ee807c91fbff288b141fe0fbf3e4bbeed7bb073eb616a121bdb01cd9ecfab48d2d820872e2e05643fa39db0ef40c1efc673772db3f3809badfbf50f1254fe9d12f97f348b94a4b6f1af262022fcaa5514990b718b2569e43826ee10e8b6c1beda7b97a0d60f2a334e44fed561d2339859b6628796038ef2d0cb745eb886ebf36a71a252823e56ec2ceaa7f83f16b9630cf12d72c693f6095e1288347cd0dd576929d9867ba1f8acc2061e5bf81cd43ee07a96521bad8dc381a11a431e6b4d76d4a7bc71599d094882c0512f84ea5f13760c5fc1bc283acd40d08ee62fb814fed0446b497523419f048cb44eb21cdfc88ee68593ca68ad64fbaf28a5858ea2518197a0871dd711e719d9c764b343a0939da39692b8780563a2d610a27a72cf2d0bb678668f0deaecc186a37a0b58ac9e1aede608cc3963342d67a29ccb401f4508a0f525ac9561919d2d04a2aa1275b4d4ae71ce8c013a7385a50866a119fc19bbf554a30b195844628ee89808dc902a6127c084375d0d8f80d9f8aa160520ac9e6b0d2c090b3ccf8c825e951bda78e7b44e7ff9c95d4b3912f076b06af91d754e304ee47f0ff778d3ba34a6b73dd5f8feb8435
+warning: pop failed: stack underflow
+
+warning: pop failed: stack underflow
+
+warning: pop failed: stack underflow
+
+warning: pop failed: stack underflow
+
+warning: pop failed: stack underflow
+
+warning: pop failed: stack underflow
+
+warning: pop failed: stack underflow
+
+warning: 100 thousand warnings shown - stopping this...
+error: configured execution steps exceeded (2228 steps)
+```
+
+Eh, warnings aren't errors, even 100 thousand of them. Let's save the value to [chall.from_piet](chall.from_piet) and un-hex it:
+
+```sh
+$ xxd -r -p chall.from_piet chall.from_piet_decoded
+$ file chall.from_piet_decoded
+chall.from_piet_decoded: zlib compressed data
+```
+
+Nice. Let's unwrap it the same as before.
+
+```sh
+$ mv chall.from_piet_decoded chall.from_piet_decoded.zlib
+$ pigz -d <chall.from_piet_decoded.zlib >chall.from_piet_decoded.unknown
+$ file chall.from_piet_decoded.unknown
+chall.from_piet_decoded.unknown: ASCII text
+```
+
+This seems like a good point to stop and save our progress once more.
+
+**The file is [chall.from_piet_decoded.unknown](chall.from_piet_decoded.unknown)**
+
+* [X] <strike>A weird base, much higher than base64</strike> (base65536)
+* [X] <strike>A language named after a painter</strike> ([Piet](https://esolangs.org/wiki/Piet))
+* [X] <strike>A language that is the opposite of good</strike> ([evil](https://esolangs.org/wiki/Evil))
+* [ ] A language that looks like a rainbow cat
+* [ ] A language that is too vulgar to write here
+* [ ] A language that ended in 'ary' but I don't remember the full name
+* [X] <strike>gzip and zlib compression</strike>
+* [X] <strike>Data hidden in a file</strike> (hidden in the Artist tag of an image)
+
+
+## Step 6: The Piet output
+
 
 
 
