@@ -60,8 +60,8 @@ Let's do a bit of research on what each of these could mean. From now on, we'll 
 * [ ] A language that looks like a rainbow cat **(nyan? [NyaScript](https://esolangs.org/wiki/NyaScript)?)**
 * [ ] A language that is too vulgar to write here **(almost definitely certainly probably [Brainfuck](https://esolangs.org/wiki/brainfuck))**
 * [ ] A language that ended in 'ary' but I don't remember the full name **(???)**
-* [ ] gzip and zlib compression **(no comment)**
-* [ ] Data hidden in a file **(no comment)**
+* [ ] gzip and zlib compression
+* [ ] Data hidden in a file
 
 Okay, so maybe research wasn't so helpful here. But we have at least a few pointers, so let's get started. Maybe the data will give more clues.
 
