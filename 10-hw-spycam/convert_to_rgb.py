@@ -7,8 +7,9 @@ So, try to convert the last 3 streams of the CSV to RGB bytes and load into GIMP
 '''
 
 # Normalize the range of -0.5 to 0.5
+# See https://stackoverflow.com/a/929107
 def normalize(float_color_val):
-  return int((float_color_val * 255) % 255)
+  return int((float_color_val + 0.5) * 255)
 
 # Process stdin
 with open(f'all.data', 'wb') as allf:
