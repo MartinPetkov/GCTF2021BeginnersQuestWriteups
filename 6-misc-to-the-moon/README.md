@@ -101,7 +101,7 @@ From Base85 - Invalid character '魦' at index 0
 
 Okay. It does say _much_ higher after all.
 
-I'm not familiar with encodings beyond base64, but knowing that computer science people are nerds, I'm going to guess encodings go up in powers of two. Let's Google around:
+I'm not familiar with encodings beyond base64, but knowing that we computer science people are nerds, I'm going to guess encodings go up in powers of two. Let's Google around:
 
 * base128 - There's [this](https://stackoverflow.com/questions/6008047/why-is-base128-not-used) explaining why this is NOT a thing
 * base256 - There's [this](https://github.com/aks-/base-256), but it doesn't really work
