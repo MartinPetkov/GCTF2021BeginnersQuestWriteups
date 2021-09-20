@@ -444,17 +444,109 @@ This is probably our next value, but let's save our progress.
 
 ## Step 7: The rainbow cat output
 
-TODO
+What are we even looking at here? It's plain text, but it's all numbers. It doesn't look like hex and un-hexing it in CyberChef doesn't produce anything.
 
+There are precious few clues left. This is clearly not Brainfuck, so let's focus on the last remaining clue - the "-ary" language.
 
+The [esolangs Language List](https://esolangs.org/wiki/Language_list) gives us 15 results. Sigh. Let's explore:
 
+* Almost Binary - Just seems like a nicer binary.
+* Binary - Maybe, but the commands are only binary 0-3 and our file doesn't match.
+* B1nary - Commands are words, doesn't match.
+* Noobinary - Maybe? But reading the description, I'd expect to see a lot more 1s in our file.
+* Rotary - Mentions Brainfuck but uses similar notation, so it doesn't match.
+* tuplary - Only uses brackets and spaces
+* Unary Filesystem - An OS, not a language.
+* Your Minsky May Vary - Uses totally different notation, not just numbers.
 
+(I later discovered this page is nowhere near complete, and the actual intended language isn't on it)
 
+### Despair
 
+This is where I and everyone got utterly stuck. You practically NEED help to divine what's supposed to happen next.
 
+I'm sad to admit I had no clue how to progress until I got this nudge:
 
+```
+Try different bases, look for a pattern. 
+```
 
+And so I did.
 
+### Hope?
 
+After much time on CyberChef trying out every base and squinting hard, I noticed something peculiar. "To Base: 8" gives the following output:
 
+```
+16370637122222260222222222213702222222412602222222222137022222224126033333333331370333341222226022222222221370222412603333333333137034160333333333313703333412222260333333333313703333333416022222222221370241222222602222222222137022241222222603333333333137033334122226022222222221370222241260222222222213702222241222222603333333333137033412222602222222222137022222224126022222222221370222241222222603333333333137034160222222222213702222412222226022222222221370224126022222222221370241
+```
 
+Why is this peculiar? Becuase I've seen Brainfuck before, and I know it often has long runs of `-----` or `+++++`, and here I see similar runs of `22222` and `33333`. Could this be Brainfuck represented in base8? It's a long shot but let's explore it, why not. Nothing else has worked so far.
+
+Googling "base 8 brainfuck esolang" actually does gives some results. And wouldn't you know it, one of those is [Unary](https://esolangs.org/wiki/Unary), an -ary language! Now, the language itself is kind of silly (it's entirely 0s), but there's a crucial piece of information at the top:
+
+![Unary to Brainfuck mappings](unary_to_brainfuck.png)
+
+This is a mapping of 3 bits to Brainfuck commands. That coincides with my observation of runs of numbers in base 8, which is 3 bits.
+
+### Is this loss?
+
+I think we've got it here. Let's convert it to Brainfuck and try it. I wrote a short Python script:
+
+```python
+num = int(open('chall.from_nyan').read().strip())
+numbin = format(num, 'b')
+
+commands = [numbin[i:i+3] for i in range(0, len(numbin) - 2, 3)]
+
+for command in commands:
+  bf =  {
+    '000': '>',
+    '001': '<',
+    '010': '+',
+    '011': '-',
+    '100': '.',
+    '101': ',',
+    '110': '[',
+    '111': ']',
+  }[command]
+  print(bf, end='')
+```
+
+```
+$ python to_brainfuck.py >chall.brainfuck
+$ cat chall.brainfuck
+]<].-<].,<<<<<-><<<<<<<<<<>,].<<<<<<<+>,-><<<<<<<<<<>,].<<<<<<<+>,-><,,,,,,,,,.,].<,,,[>,<<<<-><<<<<<<<<<>,].<<<+>,-><,,,,,,,,,.,].<[>]><,,,,,,,,,.,].<,,,[>,<<<<-><,,,,,,,,,.,].<,,,,,,[>]><<<<<<<<<<>,].<+>,<<<<<-><<<<<<<<<<>,].<<<+>,<<<<<-><,,,,,,,,,.,].<,,,[>,<<<-><<<<<<<<<<>,].<<<<+>,-><<<<<<<<<<>,].<<<<<+>,<<<<<-><,,,,,,,,,.,].<,[>,<<<-><<<<<<<<<<>,].<<<<<<<+>,-><<<<<<<<<<>,].<<<<+>,<<<<<-><,,,,,,,,,.,].<[>]><<<<<<<<<<>,].<<<<+>,<<<<<-><<<<<<<<<<>,].<<+>,-><<<<<<<<<<>,].<+>
+```
+
+Let's run it in [copy.sh/brainfuck/](https://copy.sh/brainfuck/):
+
+```
+Syntax error: Unexpected closing bracket in line 1 char 0.
+```
+
+Well fuck.
+
+## Step 8: [Sweet Victory](https://www.youtube.com/watch?v=cUZNXgIXM1c)
+
+What went wrong here? Well I went to read the Unary specification in detail, and I found a sentence I missed earlier:
+
+```
+3. Place these commands behind each other, and put an extra "1" in front
+```
+
+Interesting. So if we are indeed looking at Unary code, then when converting we need to ignore the 1 at the front. Let's correct our code (see [to_brainfuck.py](to_brainfuck.py)) and re-run it:
+
+```
+$ python to_brainfuck.py >chall.brainfuck
+$ cat chall.brainfuck
+>[-]>[-]<++++++[>++++++++++<-]>+++++++.<+[>++++++++++<-]>+++++++.<+[>----------<-]>----.<+++++[>++++++++++<-]>+++.<+[>----------<-]>-.<[>----------<-]>----.<+++++[>----------<-]>-------.<[>++++++++++<-]>+.<++++++[>++++++++++<-]>+++.<++++++[>----------<-]>----.<++++[>++++++++++<-]>++++.<+[>++++++++++<-]>+++++.<++++++[>----------<-]>--.<++++[>++++++++++<-]>+++++++.<+[>++++++++++<-]>++++.<++++++[>----------<-]>-.<[>++++++++++<-]>++++.<++++++[>++++++++++<-]>++.<+[>++++++++++<-]>+.<
+```
+
+This looks more promising. Let's run it.
+
+The flag couldn't be more appropriate:
+
+```
+CTF{pl34s3_n0_m04r}
+```
