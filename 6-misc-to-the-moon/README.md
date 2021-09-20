@@ -183,7 +183,8 @@ Exif Byte Order                 : Big-endian (Motorola, MM)
 X Resolution                    : 1
 Y Resolution                    : 1
 Resolution Unit                 : None
-Artist                          : zaeeaeeuewawaweeeuuwaawuwueeuwaawuwaaawuuuuwuwuuuwaawaawaaaawueueeweeeweaeawuuwawaaaweeeuuweeuwawaaaeeeweeeeewueueewaaaawwuuuuwaaaaawuuuuuweeuewueueuuwaaaaawuuuuuwaaaaawuuuuwwwaaaawuuuuuwawwwawawuuuwaeeeweeuuwaawaawuea...
+Artist                          : zaeeaeeuewawaweeeuuwaawuwueeuwaawuwaaawuuuuwuwuuuwaawaawaaaawueueeweeeweaeawuuwawaaaweeeuuweeuwawaaaeeeweeeeewueueewaaaawwuuuuwaaaaawuuu...
+...
 ```
 
 Well now! This looks like what we're actually looking for. It goes on for many many lines and clearly has a pattern, consisting only of the lettes `zaeuw`. Let's take another break.
