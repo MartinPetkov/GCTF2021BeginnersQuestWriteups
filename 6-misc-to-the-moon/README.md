@@ -383,6 +383,69 @@ This seems like a good point to stop and save our progress once more.
 
 ## Step 6: The Piet output
 
+We've been going for a while. How much more could there be?
+
+With a weary sigh, let's look at the file.
+
+```sh
+$ file chall.from_piet_decoded.unknown
+chall.from_piet_decoded.unknown: ASCII text
+```
+Great.
+
+```sh
+$ head chall.from_piet_decoded.unknown
+nyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyya~
+nyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyya~
+nyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyya~
+nyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyya~
+nyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyya~
+nyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyya~
+nyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyya~
+nyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyya~
+nyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyya~
+nyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyya~
+```
+
+Interesting. There's an obvious pattern here, and it's safe to assume it's some kind of simplistic esolang.
+
+Looking at our remaining clues, there's only one thing it could be: Rainbow Cat.
+
+![Rainbow cat](rainbow_cat.png)
+
+I initially Googled "esolang nyan" but I soon realized (after discussing with others on Discord) that this language never has the final "n", it's only ever "nya" and "~". Googling "esolang nya" lands us on [`nya~`](https://esolangs.org/wiki/Nya~).
+
+Naturally probably practically no one has heard of this language. There's an implementation at the bottom, but I took another look at the (very small number of) commands and realized something.
+
+Every line is just one `n`, a bunch of `y`s, and a command to output a char. That boils down to counting the `y`s - 1 and converting that to chr. Let's do it:
+
+```sh
+$ cp chall.from_piet_decoded.unknown chall.nyan
+$ python -c 'for line in open("chall.nyan").readlines(): print(chr(line.count("y") - 1), end="")' > chall.from_nyan
+$ file chall.from_nyan
+chall.from_nyan: ASCII text, with very long lines
+$ head chall.from_nyan
+440697918422363183397548356115174111979967632241756381461523275762611555565044345243686920364972358787309560456318193690287799624872508559490789890532367282472832564379215298488385593860832849627398865422864710999039787979733217240717198641619578634620231344233376325369569117210379679868602299244468387044128773681334105139544596909148571184763654886495124023818825988036876333149722377075577809087358356951704469327595398462722928801
+```
+
+This is probably our next value, but let's save our progress.
+
+
+**The file is [chall.from_nyan](chall.from_nyan)**
+
+* [X] <strike>A weird base, much higher than base64</strike> (base65536)
+* [X] <strike>A language named after a painter</strike> ([Piet](https://esolangs.org/wiki/Piet))
+* [X] <strike>A language that is the opposite of good</strike> ([evil](https://esolangs.org/wiki/Evil))
+* [X] <strike>A language that looks like a rainbow cat</strike>
+* [ ] A language that is too vulgar to write here
+* [ ] A language that ended in 'ary' but I don't remember the full name
+* [X] <strike>gzip and zlib compression</strike>
+* [X] <strike>Data hidden in a file</strike> (hidden in the Artist tag of an image)
+
+## Step 7: The rainbow cat output
+
+TODO
+
 
 
 
