@@ -1,0 +1,35 @@
+1. It's a vmlinuz image
+
+2. To extract:
+
+```
+wget -O extract-vmlinux https://raw.githubusercontent.com/torvalds/linux/master/scripts/extract-vmlinux
+sudo apt-get install linux-headers-$(uname -r)
+./extract-vmlinux ./bzImage >./vmlinux
+qemu-system-x86_64 -nographic ./vmlinux
+```
+
+3. "API Level 25" is Android 7.1 (https://developer.android.com/studio/releases/platforms#7.1)
+
+4. The key is stored in SusanSue.txt
+
+5. Apparently this is useful info:
+SDK Platform 25, x86 atom_64 system; emulator -avd em7164 -show-kernel -verbose -kernel bzImage -wipe-data
+
+Apparently this is how I run it:
+emulator -avd em7164 -show-kernel -verbose -kernel bzImage -wipe-data
+
+But don't do that.
+
+Instead, grep for 'Susan' in the vmlinux image:
+
+```
+$ hexdump -C vmlinux | grep -C10 -i 'Susan'
+00bd0e40  00 66 73 2f 6f 70 65 6e  2e 63 00 53 75 73 61 6e  |.fs/open.c.Susan|
+00bd0e50  53 75 65 00 2f 73 64 63  61 72 64 2f 44 6f 77 6e  |Sue./sdcard/Down|
+00bd0e60  6c 6f 61 64 2f 52 61 76  65 6e 2e 74 78 74 00 67  |load/Raven.txt.g|
+00bd0e70  43 54 46 3a 4b 45 59 3a  00 53 42 3a 35 37 35 37  |CTF:KEY:.SB:5757|
+00bd0e80  35 36 00 01 36 56 46 53  3a 20 66 69 6c 65 2d 6d  |56..6VFS: file-m|
+```
+
+And wouldn't you know it, the flag is CTF{SB:575756}
