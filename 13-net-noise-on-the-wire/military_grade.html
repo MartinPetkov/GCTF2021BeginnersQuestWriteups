@@ -1,0 +1,220 @@
+<html>
+<!--
+___  ________ _     _____ _____ ___  ________   __  _____ ______  ___ ______ _____
+|  \/  |_   _| |   |_   _|_   _/ _ \ | ___ \ \ / / |  __ \| ___ \/ _ \|  _  \  ___|
+| .  . | | | | |     | |   | |/ /_\ \| |_/ /\ V /  | |  \/| |_/ / /_\ \ | | | |__
+| |\/| | | | | |     | |   | ||  _  ||    /  \ /   | | __ |    /|  _  | | | |  __|
+| |  | |_| |_| |_____| |_  | || | | || |\ \  | |   | |_\ \| |\ \| | | | |/ /| |___
+\_|  |_/\___/\_____/\___/  \_/\_| |_/\_| \_| \_/    \____/\_| \_\_| |_/___/ \____/
+
+
+ _____ _   _ _____ ________   _______ _____ _____ _____ _   _   ___________  _____
+|  ___| \ | /  __ \| ___ \ \ / / ___ \_   _|_   _|  _  | \ | | |_   _| ___ \/  __ \
+| |__ |  \| | /  \/| |_/ /\ V /| |_/ / | |   | | | | | |  \| |   | | | |_/ /| /  \/
+|  __|| . ` | |    |    /  \ / |  __/  | |   | | | | | | . ` |   | | |    / | |
+| |___| |\  | \__/\| |\ \  | | | |     | |  _| |_\ \_/ / |\  |  _| |_| |\ \ | \__/\
+\____/\_| \_/\____/\_| \_| \_/ \_|     \_/  \___/ \___/\_| \_/  \___/\_| \_| \____/
+
+                                 UNHACKABLE! (TM)
+
+-->
+<head>
+  <title>Military Grade IRC</title>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300&family=Share+Tech+Mono&display=swap');
+
+body {
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #0d497f;
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.25em;
+}
+
+input {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1.25em;
+  width: 15em;
+}
+
+input[type=submit] {
+  font-family: 'Montserrat', sans-serif;
+}
+
+div.outer {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  align-content: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+div.chat {
+  margin: 2em;
+}
+
+div.chatbox {
+  background-color: #1463ab;
+  margin-top: 2em;
+  height: 18em;
+  padding: 0.25em;
+  font-size: 0.75em;
+}
+
+div.chatbox p {
+  margin: 0;
+}
+
+span.name {
+  color: white;
+  font-weight: bold;
+}
+
+button {
+  width: 100%;
+  font-family: 'Montserrat', sans-serif;
+}
+
+  </style>
+</head>
+<body>
+  <div class="outer">
+    <div class="chat">
+      <div>
+        <input name="codename" id="codename" placeholder="Code name">
+        <input name="msg" id="msg" placeholder="Message">
+      </div>
+      <div>
+        <button id="milgrade">Enable Military Grade Encryption</button>
+      </div>
+      <div class="chatbox" id="chatbox"></div>
+    </div>
+  </div>
+</body>
+<script>
+let elCodename = null;
+let elMsg = null;
+let elMilGrade = null;
+let elChatBox = null;
+let milGradeEnabled = false;
+let ws = null;
+
+function appendMessage(codename, text) {
+  const elSpan = document.createElement("span");
+  elSpan.classList.add("name");
+  elSpan.innerText = codename;
+
+  const elP = document.createElement("p");
+  elP.appendChild(document.createTextNode("["));
+  elP.appendChild(elSpan);
+  elP.appendChild(document.createTextNode("] " + text));
+
+  elChatBox.appendChild(elP);
+}
+
+function toHex(n) {
+  return (n >> 4).toString(16) + (n & 0xf).toString(16);
+}
+
+function encryptWithMilitaryGradeEncryption(text) {
+  const encoder = new TextEncoder();
+  const encoded = encoder.encode(text);
+  const len = encoded.length;
+
+  const key = Uint8Array.from([
+    11, 22, 33, 44, 55, 66, 77, 88, 99, 101, 202
+  ]);
+  const keylen = key.length;
+
+  let hexstr = "";
+
+  for (let i = 0; i < len; i++) {
+    hexstr += toHex(encoded[i] ^ key[i % keylen]);
+  }
+
+  return hexstr;
+}
+
+function decryptWithMilitaryGradeEncryption(hexstr) {
+  const len = hexstr.length;
+
+  const key = Uint8Array.from([
+    11, 22, 33, 44, 55, 66, 77, 88, 99, 101, 202
+  ]);
+  const keylen = key.length;
+
+  const arr = [];
+
+  for (let i = 0; i < len; i += 2) {
+    const byte = parseInt(hexstr.substring(i, i + 2), 16);
+    arr.push(byte ^ key[(i >> 1) % keylen]);
+  }
+
+  const decoder = new TextDecoder();
+  return decoder.decode(Uint8Array.from(arr));
+}
+
+function sendMessage() {
+  const name = elCodename.value;
+  const text = elMsg.value;
+  const message = milGradeEnabled ?
+      encryptWithMilitaryGradeEncryption(text) : text;
+  elMsg.value = "";
+
+  const data = JSON.stringify({
+    militaryGradeEncryption: milGradeEnabled,
+    codename: name,
+    message: message
+  });
+
+  appendMessage(name, text);
+
+  ws.send(data);
+}
+
+function onMilGradeClick() {
+  milGradeEnabled = !milGradeEnabled;
+
+  if (milGradeEnabled) {
+    elMilGrade.innerText = "Disable Military Grade Encryption";
+  } else {
+    elMilGrade.innerText = "Enable Military Grade Encryption";
+  }
+}
+
+function onReciveMessage(ev) {
+  const packet = ev.data;
+  const data = JSON.parse(packet);
+  const text = data.militaryGradeEncryption ?
+      decryptWithMilitaryGradeEncryption(data.message) : data.message;
+
+  appendMessage(data.codename, text);
+}
+
+function onMsgKeyDown(event) {
+  if (event.keyCode === 13) {
+    event.preventDefault();
+    sendMessage();
+  }
+}
+
+function main() {
+  elCodename = document.getElementById("codename");
+  elMsg = document.getElementById("msg");
+  elMilGrade = document.getElementById("milgrade");
+  elChatBox = document.getElementById("chatbox");
+
+  elMilGrade.addEventListener("click", onMilGradeClick);
+  elMsg.addEventListener("keydown", onMsgKeyDown);
+
+  ws = new WebSocket("ws://192.168.56.198:80");
+  ws.addEventListener("message", onReciveMessage);
+}
+
+window.addEventListener("DOMContentLoaded", main, false);
+</script>
+</html>
