@@ -1,0 +1,1 @@
+CTF{format_string_for_the_win}
