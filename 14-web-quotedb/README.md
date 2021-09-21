@@ -13,11 +13,11 @@ This challenge comes with a URL: https://quotedb-web.2021.ctfcompetition.com/
 
 Let's visit it and see what we're dealing with.
 
-![The Quote DB homepage](quotedb_homepage.png).
+![The Quote DB homepage](quotedb_homepage.png)
 
-There's practically nothing going on here. There's a quote and an author. There's no way to enter new quotes. Trying various subpages like "/admin" or "/add_quote" and variations also turns up nothing.
+There's practically nothing going on here. There's a quote and an author. There's no way to enter new quotes. Trying various subpages like "/admin" or "/add_quote" and variations also turns up nothing. There's no JavaScript, either included or embedded in the page source.
 
-One cool thing you can do is use a website or extension like [BuiltWith](https://builtwith.com/) or [Wappalyzer](https://www.wappalyzer.com/) to profile the website and see what technologies it's using. In this case though, all they tell us is that it uses Ubuntu, Apache, GCP and some kind of CDN.
+One cool thing you can do is use a website or extension like [BuiltWith](https://builtwith.com/) or [Wappalyzer](https://www.wappalyzer.com/) to profile the website and see what technologies it's using. In this case though, all we find is that the website uses Ubuntu, Apache, GCP and some kind of CDN. No hint on whether there's a database or what kind if so.
 
 ### Looking for SQL injection
 
@@ -60,14 +60,14 @@ Same. Empty response and HTTP status 500. But no database dump, sadly.
 
 Strangely, this appears to work, and returns quote 1.
 
-What about this?
+What about this? *(I just guessed that the table is called "quotes")*
 
 ```
 /?id=1 UNION SELECT * FROM quotes
 If you want total security, go to prison. There you're fed, clothed, given medical care and so on. The only thing lacking... is freedom." - Dwight D. Eisenhower
 ```
 
-Oh! This isn't sanitized away! However, it returns the first quote, presumably because it selects the top result from the query. Let's verify this by using a nonexistant quote id but still selecting from the `quotes` table:
+Oh! This isn't sanitized away! However, it returns the first quote, presumably because it selects the top result from the query. Let's verify this by using a nonexistent quote id but still selecting from the `quotes` table:
 
 ```
 /?id=77 UNION SELECT * FROM quotes
@@ -92,11 +92,11 @@ WHERE id = 77 UNION SELECT * FROM quotes
 
 ### Looking for the flag
 
-Now what? We can already look up any row in the `quotes` table. Enumerating them doesn't find anything.
+Now what? We can already look up any row in the `quotes` table. Enumerating it doesn't find anything.
 
 Maybe the flag is in another table. But how do we find out what tables are out there?
 
-It's [possible](https://www.sqltutorial.org/sql-list-all-tables/) in some engines to directly query metadata tables. We don't know exactly what DB this website is using, but let's try a few.
+It's [possible](https://www.sqltutorial.org/sql-list-all-tables/) in some engines to directly query metadata tables. We don't know exactly what DB this website is using, but let's try a few known metadata table names.
 
 Before we do so though, we need to determine how many columns are in the quotes database. We can't just `SELECT *` from arbitrary tables or the `UNION` would fail as it can't match up the rows. This is pretty simple to do though - just try selecting static values and increasing the number until we get a success.
 
@@ -111,7 +111,9 @@ HTTP Status 500
 HTTP Status 200
 ```
 
-That was quick. Probably the id, quote and author. Next, let's look for the existence of metadata tables:
+That was quick. There are 3 columns, probably the id, quote and author.
+
+Next, let's look for the existence of metadata tables:
 
 ```
 /?id=77 UNION SELECT 1,2,3 FROM user_tables
@@ -127,7 +129,7 @@ HTTP Status 500
 HTTP Status 200
 ```
 
-Interesting! That tells us we're dealing with [MySQL](https://www.mysql.com/). Now let's try to select some columns from it. You can Google and find [the docs](https://dev.mysql.com/doc/mysql-infoschema-excerpt/8.0/en/information-schema-tables-table.html) which describe the columns.
+Interesting! That tells us we're dealing with [MySQL](https://www.mysql.com/). Now let's try to select some rows from it. You can Google and find [the docs](https://dev.mysql.com/doc/mysql-infoschema-excerpt/8.0/en/information-schema-tables-table.html) which describe the available columns.
 
 ```
 /?id=77 UNION SELECT TABLE_CATALOG,TABLE_NAME,TABLE_TYPE FROM information_schema.tables
@@ -182,7 +184,7 @@ Oops. Let's try adding more columns.
 HTTP Status 200
 ```
 
-And with that, we've extracted our flag.
+That succeeds and gives us the flag.
 
 ```
 CTF{little_bobby_tables_we_call_him}
