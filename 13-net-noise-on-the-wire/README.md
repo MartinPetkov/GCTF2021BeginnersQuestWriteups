@@ -128,7 +128,7 @@ The favicon GET is uninteresting, but the other packet confirms our suspicion: t
 {"militaryGradeEncryption":true,"codename":"BadGuy87","message":"72734044"}
 ```
 
-Let's plug the hashes in the last 3 messages into the webpage we extracted earlier. They translate to:
+Let's plug the hashes in the last 3 messages into the decryption function on the webpage we extracted earlier. They translate to:
 
 ```
 > decryptWithMilitaryGradeEncryption("717f510b44623d391016bd6464450c5e316d1a0c16b95f794d487a2719373000be4a54445843273f080216b97c795348642d19300a169d627a4d645634280c0c21a53a241218")
