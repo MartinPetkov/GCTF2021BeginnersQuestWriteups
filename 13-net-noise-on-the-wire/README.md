@@ -117,23 +117,43 @@ The favicon GET is uninteresting, but the other packet confirms our suspicion: t
 
 ### The WebSocket packets
 
-TODO
+```
+{"militaryGradeEncryption":false,"codename":"Goon8133","message":"what's the password to the zip file?"}
+{"militaryGradeEncryption":false,"codename":"BadGuy87","message":"which zip file?"}
+{"militaryGradeEncryption":false,"codename":"Goon8133","message":"well, you know, THE zip file"}
+{"militaryGradeEncryption":false,"codename":"BadGuy87","message":"oh, that one... gimme a sec, need to turn on military grade encryption"}
+{"militaryGradeEncryption":false,"codename":"Goon8133","message":"ok"}
+{"militaryGradeEncryption":true,"codename":"BadGuy87","message":"717f510b44623d391016bd6464450c5e316d1a0c16b95f794d487a2719373000be4a54445843273f080216b97c795348642d19300a169d627a4d645634280c0c21a53a241218"}
+{"militaryGradeEncryption":true,"codename":"Goon8133","message":"67794d0c452e3467"}
+{"militaryGradeEncryption":true,"codename":"BadGuy87","message":"72734044"}
+```
 
+Let's plug the hashes in the last 3 messages into the webpage we extracted earlier. They translate to:
 
+```
+> decryptWithMilitaryGradeEncryption("717f510b44623d391016bd6464450c5e316d1a0c16b95f794d487a2719373000be4a54445843273f080216b97c795348642d19300a169d627a4d645634280c0c21a53a241218")
+"zip's password is BossToldMeToSetABetterPasswordSoThisWillHaveToDo1234"
+> decryptWithMilitaryGradeEncryption("67794d0c452e3467")
+'lol rly?'
+> decryptWithMilitaryGradeEncryption("72734044")
+'yeah'
+```
 
+"Military-grade" indeed.
 
+### Extracting the flag
 
+Let's unzip the file:
 
+```sh
+$ unzip flag.zip
+Archive:  flag.zip
+[flag.zip] flag.txt password:
+ extracting: flag.txt
+```
 
+And extract our flag.
 
-
-
-
-
-
-
-
-
-
-
-
+```
+CTF{PleaseAssumeThisIsSomeSecretStuffThankYou}
+```
