@@ -20,4 +20,120 @@ Archive:  noise-on-the-wire.zip
 
 Let's look at the files and see what we're dealing with.
 
+We only have one [PCAP](https://www.reviversoft.com/en/file-extensions/pcap) file, containing captured network packets. The most common tool for analyzing this kind of file is [Wireshark](https://www.wireshark.org/), so we're going to be using that.
+
+The file is called "httponly", which may be a reference to the [HttpOonly](https://owasp.org/www-community/HttpOnly) cookie flag. Let's keep that in mind in case it becomes useful.
+
+Analyzing pcaps requires some understanding of computer networking and common protocols, such as the [OSI Model](https://en.wikipedia.org/wiki/OSI_model), [TCP/IP](https://en.wikipedia.org/wiki/Internet_protocol_suite), and the the [TCP Three-Way Handshake](https://en.wikipedia.org/wiki/Transmission_Control_Protocol#Connection_establishment). However, even just looking at the packet payload can often be enough.
+
+*Note: This is much too broad of topic to cover here but the rest of this writeup does assume some basic knowledge of TCP/IP.*
+
+Let's take an initial look:
+
+![Wireshark all packets](wireshark_all_packets.png)
+
+We see a few things of note:
+
+* A bunch of TCP SYNs and ACKs, probably just part of the standard session establishment.
+* A few HTTP messages.
+* A few [WebSocket](https://en.wikipedia.org/wiki/WebSocket) messages at the end.
+
+The WebSocket wiki page says it uses the [HTTP Upgrade header](https://en.wikipedia.org/wiki/HTTP/1.1_Upgrade_header) to morph the connection, so it's reasonable to assume some of the HTTP packets were used to establish or initiate the WebSocket connection.
+
+Let's filter out TCP and focus on the remaining protocols, using the following filter:
+
+```
+http || websocket
+```
+
+![Wireshark with TCP filtered out](wireshark_tcp_filtered.png)
+
+That seems small enough to look at packet-by-packet.
+
+### The HTTP packets
+
+Let's look at the HTTP packets, top to bottom.
+
+```
+GET /download/flag.zip HTTP/1.1\r\n
+HTTP/1.1 200 OK\r\n
+```
+
+So they fetched a zip file with the flag. Let's extract the bytes and treat them like a zip file. In Wireshark, you can do this by right-clicking (or two-finger clicking) the the "Media Type" at the bottom of the second packet and choosing "Export Packet Bytes...". Let's try to unzip it.
+
+```sh
+$ file flag.bin
+flag.bin: Zip archive data, at least v2.0 to extract
+$ mv flag.bin flag.zip
+$ unzip flag.zip
+Archive:  flag.zip
+[flag.zip] flag.txt password:
+```
+
+Drats, foiled. Let's move on.
+
+```
+GET / HTTP/1.1\r\n
+HTTP/1.1 200 OK\r\n
+```
+
+Nice! This second request contains an HTML file, with a super scary "Stay out!" warning:
+
+![Military-grade encryption](military_grade.png)
+
+"Unhackable". Sure thing.
+
+What does this page look like when you open the file?
+
+![The encryption web page with code name and message](code_and_message.png)
+
+You can seemingly encrypt messages.
+
+More interesting are the JavaScript functions embedded in the page source:
+
+```js
+function encryptWithMilitaryGradeEncryption(text) {
+  ...
+}
+
+function decryptWithMilitaryGradeEncryption(hexstr) {
+  ...
+}
+```
+
+We can probably just use these from the console. Let's move on with the last few packets.
+
+```
+GET / HTTP/1.1\r\n
+HTTP/1.1 101 Switching Protocols\r\n
+  Upgrade: websocket\r\n
+  Connection: Upgrade\r\n
+  Sec-WebSocket-Accept: qxA6c0bXwkHUXALTC5mfFrg8438=\r\n
+GET /favicon.ico HTTP/1.1\r\n
+GET /favicon.ico HTTP/1.1\r\n
+```
+
+The favicon GET is uninteresting, but the other packet confirms our suspicion: they've activated a WebSocket channel.
+
+### The WebSocket packets
+
 TODO
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
