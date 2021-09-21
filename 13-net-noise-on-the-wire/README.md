@@ -22,7 +22,7 @@ Let's look at the files and see what we're dealing with.
 
 We only have one [PCAP](https://www.reviversoft.com/en/file-extensions/pcap) file, containing captured network packets. The most common tool for analyzing this kind of file is [Wireshark](https://www.wireshark.org/), so we're going to be using that.
 
-The file is called "httponly", which may be a reference to the [HttpOonly](https://owasp.org/www-community/HttpOnly) cookie flag. Let's keep that in mind in case it becomes useful.
+The file is called "httponly", which may be a reference to the [HttpOnly](https://owasp.org/www-community/HttpOnly) cookie flag. Let's keep that in mind in case it becomes useful.
 
 Analyzing pcaps requires some understanding of computer networking and common protocols, such as the [OSI Model](https://en.wikipedia.org/wiki/OSI_model), [TCP/IP](https://en.wikipedia.org/wiki/Internet_protocol_suite), and the the [TCP Three-Way Handshake](https://en.wikipedia.org/wiki/Transmission_Control_Protocol#Connection_establishment). However, even just looking at the packet payload can often be enough.
 
@@ -59,7 +59,7 @@ GET /download/flag.zip HTTP/1.1\r\n
 HTTP/1.1 200 OK\r\n
 ```
 
-So they fetched a zip file with the flag. Let's extract the bytes and treat them like a zip file. In Wireshark, you can do this by right-clicking (or two-finger clicking) the the "Media Type" at the bottom of the second packet and choosing "Export Packet Bytes...". Let's try to unzip it.
+So they fetched a zip file with the flag. Let's extract the bytes and treat them like a zip file. In Wireshark, you can do this by opening the context menu, going to "Media Type" at the bottom of the second packet, and choosing "Export Packet Bytes...". Let's try to unzip it.
 
 ```sh
 $ file flag.bin
@@ -83,7 +83,7 @@ Nice! This second request contains an HTML file, with a super scary "Stay out!" 
 
 "Unhackable". Sure thing.
 
-What does this page look like when you open the file?
+What does this page look like when you extract it as an HTML file?
 
 ![The encryption web page with code name and message](code_and_message.png)
 
@@ -128,7 +128,7 @@ The favicon GET is uninteresting, but the other packet confirms our suspicion: t
 {"militaryGradeEncryption":true,"codename":"BadGuy87","message":"72734044"}
 ```
 
-Let's plug the hashes in the last 3 messages into the decryption function on the webpage we extracted earlier. They translate to:
+Let's plug the hex strings from the last 3 messages into the decryption function on the webpage we extracted earlier.
 
 ```
 > decryptWithMilitaryGradeEncryption("717f510b44623d391016bd6464450c5e316d1a0c16b95f794d487a2719373000be4a54445843273f080216b97c795348642d19300a169d627a4d645634280c0c21a53a241218")
