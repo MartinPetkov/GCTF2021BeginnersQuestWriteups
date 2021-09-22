@@ -160,21 +160,77 @@ def check(code):
 
 We need to understand what input code will make the function return True, so we can use that as the flag. To do that, we need to "undo" the operations in reverse order as best as we can.
 
-TODO
+First, we know that `x` ANDed with 4 numbers produces 4 other numbers (`a`, `b`, `c` and `d`). Intiutively, this can be solved line a set of linear equations, but in practice it's a bit more complicated.
+
+AND is not a directly reversible operation. If we know the result and one operand, we can only determine the following:
+
+* ? & 1 = 1; our unknown must be a 1
+* ? & 1 = 0; our unknown must be a 0
+* ? & 0 = 0; our unknown might be a 0 or a 1
+* ? & 0 = 1; not possible with AND
+
+With that in mind, we can progressively uncover `x` by figuring out which bits must be 0s or 1s for `a`, then for `b`, etc. until we (hopefully) uncover all of `x`.
+
+```
+x = ___0___1___0___0___1___0___1___0___0___0___0___1___1___1___1___0
+&   0001000100010001000100010001000100010001000100010001000100010001  # 1229782938247303441
+------------------------------------------------------------------
+a = 0000000100000000000100000001000000000000000000010001000100010000  # 0x0100101000011110
 
 
+x = __10__01__00__10__11__10__01__00__10__00__00__11__11__11__11__00  # 0o0210421042104210421042
+&   0010001000100010001000100010001000100010001000100010001000100010
+------------------------------------------------------------------
+b = 0010000000000010001000100000000000100000000000100010001000100000  # 0x2002220020022220
 
 
+x = _110_101_100_110_011_110_001_000_110_100_000_111_111_111_011_000
+&   0100010001000100010001000100010001000100010001000100010001000100  # rotate_left(1229782938247303441, 2)
+------------------------------------------------------------------
+c = 0100010001000100000001000000000001000100000001000100010000000000  # 0x4444040044044400
 
 
+x = 1110110111000110001101101001000011100100000001110111111110110000
+&   1000100010001000100010001000100010001000100010001000100010001000  # rotate_left(0o0210421042104210421042, 2)
+------------------------------------------------------------------
+d = 1000100010000000000000001000000010000000000000000000100010000000  # 0x8880008080000880
+```
 
+With this, we have `x`. Let's more on to the next step.
 
+---
 
+We have to undo the rotation. We previously rotated 10 to the left, so now let's rotate 10 to the right.
 
+```
+               111011011100011000110110100100001110010000000111011111 1110110000
+        |------------------------------------------------------------------|
+        V
+x = 1110110000 111011011100011000110110100100001110010000000111011111
+```
 
+---
 
+XOR is indeed a reversible operation. XORing the result with one of the operands gives the other operand. So let's XOR with the static value
 
+```py
+x = x ^ 0o1275437152437512431354
+```
 
+---
 
+Finally, we have to undo the loop and bit shifts. This might sound complicated (and it would be in the general case), but if we remember our analysis of what that loop did, we can realize that we are in fact done, in a sense.
 
+`x` currently represents the correct code, expressed as 4-bit digits from right to left. So let's decode it 4 bits at a time and then reverse:
 
+```py
+xs = format(x, "064b")
+code_digits = [int(xs[i:i+4], 2) for i in range(0, len(xs), 4)]
+code = ''.join(reversed([str(d) for d in code_digits]))
+```
+
+And with that, we've got our flag.
+
+```
+CTF{3333319552798534}
+```
