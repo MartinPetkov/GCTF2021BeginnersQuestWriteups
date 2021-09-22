@@ -1,6 +1,6 @@
 # Challenge #15: Just Another Keypad
 
-Category: `net`
+Category: `rev`
 
 ## Story
 
