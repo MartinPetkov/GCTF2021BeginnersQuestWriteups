@@ -109,15 +109,15 @@ else
   CheckKeyPadCode := False;
 ```
 
-Oh boy, now we have dollar signs. Probably not [argument accessors](https://stackoverflow.com/a/5163260). No, instead [`$` (dollar sign) denotes a hexadecimal base number](https://wiki.freepascal.org/Dollar_sign).
-
-Gentle breeze.
-
 The last few lines are equivalent to a `return`.
+
+But oh boy, now we have dollar signs too. Probably not [variable accessors](https://stackoverflow.com/a/5163260). Instead, [`$` (dollar sign) denotes a hexadecimal base number](https://wiki.freepascal.org/Dollar_sign).
+
+Cool breeze.
 
 ---
 
-Taking all that into account, this is more or less what it looks like in Python (see [keypad.py](keypad.py)):
+Taking all that into account, this is what it looks like in Python (see [keypad.py](keypad.py)):
 
 ```py
 INT_BITS = 64
