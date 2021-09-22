@@ -1,0 +1,4 @@
+src/md5fastcoll/md5.o: src/md5fastcoll/md5.cpp /usr/include/stdc-predef.h \
+ src/md5fastcoll/main.hpp
+/usr/include/stdc-predef.h:
+src/md5fastcoll/main.hpp:
