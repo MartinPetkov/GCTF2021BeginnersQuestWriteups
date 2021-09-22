@@ -1,4 +1,4 @@
-# Challenge #13: Noise on the Wire
+# Challenge #15: Just Another Keypad
 
 Category: `net`
 
