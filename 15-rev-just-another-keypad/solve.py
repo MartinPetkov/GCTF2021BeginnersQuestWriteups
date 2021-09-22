@@ -13,8 +13,8 @@ def undo():
   #x = 0b0100001101011000000111110010010101011001000100110011001100110011
 
   xs = format(x, "064b")
-  code_digits = [int(i, 2) for i in reversed([xs[i:i+4] for i in range(0, len(xs), 4)])]
-  code = ''.join([str(d) for d in code_digits])
+  code_digits = [int(xs[i:i+4], 2) for i in range(0, len(xs), 4)]
+  code = ''.join(reversed([str(d) for d in code_digits]))
 
   return code
 
