@@ -1,0 +1,24 @@
+- Remove the shell directive at the top
+- Remove __all__ directive at the  top
+- Convert to single-spaced indentation
+- Convert NUMBERS to uses a prime numbers generator, taken from https://codegolf.stackexchange.com/a/70027
+- Convert "output = ...; output.append" lines into list comprehensions
+- Reduce function calls across multiple lines into one line
+- Combine the  step1 and step2 functions
+- Convert all the struct packing functions to just byte addition
+- Convert the byte generation for the 3 blocks into the final bytes
+- Use zip() instead of enumerate to xor the data blocks with the primes
+- Use a cheaper primes generator like https://codegolf.stackexchange.com/a/6297
+- Convert the 'a..z' to a variable and reuse it with .upper()
+- Convert the '\x00\x00\x00\x1a' to a variable and reuse it
+- Move the bytes to list comprehension directly instead of saving it in a variable
+- Rename "range" to a single character
+- Move the def to a single line with semicolons
+- Remove the [] in the call to bytes()
+- Combine byte sequence with \x00 and a-z, .upper() on the combination doesn't affect the first 4 bytes
+- Rename all functions and variables to single characters
+- Remove all blank lines
+- Remove all newlines where syntactically possible
+- Remove all spaces  where syntactically possible
+- Put through a minifier like https://python-minifier.com/
+- Success!
