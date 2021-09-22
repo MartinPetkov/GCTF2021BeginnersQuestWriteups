@@ -31,7 +31,7 @@ type
   DigitType = array[1..16] of SmallInt;
 ```
 
-This looks like a type definition. That's not necessary in Python so we'll omit it, but remember that any occurrence of "DigitType" is really just an array of 16 digits.
+This looks like a type definition. That's not necessary in Python so we'll omit it, but remember that any occurrence of "DigitType" is really just an array of 16 ints. In Python 3, [ints have infinite size](https://note.nkmk.me/en/python-int-max-value/), so there's no need to differentiate between Pascal's "Small" Int and any other types of Int.
 
 ---
 
@@ -73,7 +73,7 @@ All in all, this appears to set `x` to the digits in `code` from right to left, 
 * `code` is an array of 16 ints
 * `i` increments by 4
 * QWord is 64 bits = 16 * 4 bits
-* 9, the largest digit value, is 0b1001 which takes up 4 bits
+* 9, the largest digit value, is `1001` in binary, which takes up 4 bits
 
 ---
 
@@ -97,7 +97,7 @@ c := x and RolQWord(1229782938247303441, 2);
 d := x and RolQWord(&0210421042104210421042, 2);
 ```
 
-Nothing shocking. More <strike>addresses</strike> octal numbers. Similar to `or`, [`and` supports bitwise operations on ints](https://wiki.freepascal.org/Or#bitwise_operation).
+Nothing shocking. More <strike>addresses</strike> octal numbers. As with `or`, [`and` is a bitwise operation when used with ints](https://wiki.freepascal.org/Or#bitwise_operation).
 
 ---
 
@@ -158,18 +158,18 @@ def check(code):
 
 ### Reversing the code to make it return True
 
-We need to understand what input code will make the function return True, so we can use that as the flag. To do that, we need to "undo" the operations in reverse order as best as we can.
+We need to understand what input code will make the function return True, so we can use that as the flag. To do that, we need to "undo" the operations in reverse order.
 
-First, we know that `x` ANDed with 4 numbers produces 4 other numbers (`a`, `b`, `c` and `d`). Intiutively, this can be solved line a set of linear equations, but in practice it's a bit more complicated.
+First, we know that `x` ANDed with 4 numbers produces 4 other numbers (`a`, `b`, `c` and `d`). Intiutively, this can be solved as a set of linear equations, but in practice it's a bit more complicated.
 
 AND is not a directly reversible operation. If we know the result and one operand, we can only determine the following:
 
 * ? & 1 = 1; our unknown must be a 1
 * ? & 1 = 0; our unknown must be a 0
-* ? & 0 = 0; our unknown might be a 0 or a 1
-* ? & 0 = 1; not possible with AND
+* ? & 0 = 0; **our unknown might be a 0 or a 1**
+* <strike>? & 0 = 1; not possible with AND</strike>
 
-With that in mind, we can progressively uncover `x` by figuring out which bits must be 0s or 1s for `a`, then for `b`, etc. until we (hopefully) uncover all of `x`.
+With that in mind, we can progressively uncover `x` by figuring out which bits must be 0s or 1s for `a`, then for `b`, etc. until we uncover (hopefully) all of `x`.
 
 ```
 x = ___0___1___0___0___1___0___1___0___0___0___0___1___1___1___1___0
@@ -211,7 +211,7 @@ x = 1110110000 111011011100011000110110100100001110010000000111011111
 
 ---
 
-XOR is indeed a reversible operation. XORing the result with one of the operands gives the other operand. So let's XOR with the static value
+XOR actually is a reversible operation. XORing the result with one of the operands gives the other operand. So let's XOR our `x` so far with the static value:
 
 ```py
 x = x ^ 0o1275437152437512431354
@@ -219,9 +219,9 @@ x = x ^ 0o1275437152437512431354
 
 ---
 
-Finally, we have to undo the loop and bit shifts. This might sound complicated (and it would be in the general case), but if we remember our analysis of what that loop did, we can realize that we are in fact done, in a sense.
+Finally, we have to undo the loop and bit shifts. This might sound complicated (and it would be in the general case), but our analysis of the loop from earlier means we're actually done, in a sense.
 
-`x` currently represents the correct code, expressed as 4-bit digits from right to left. So let's decode it 4 bits at a time and then reverse:
+`x` currently represents the correct code, expressed as 4-bit digits from right to left. So let's decode it 4 bits at a time and reverse:
 
 ```py
 xs = format(x, "064b")
