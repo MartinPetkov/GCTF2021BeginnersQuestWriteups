@@ -588,7 +588,3 @@ And we finally get our flag:
 ```
 CTF{EncodingSuccessfulIntelReceivedCorrectly}
 ```
-
-
-
-
