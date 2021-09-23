@@ -5,3 +5,5 @@ law-of-droids.zip
 
 # Shouldn't include the Free Pascal Debian package from chal #15
 *.deb
+
+__pycache__
