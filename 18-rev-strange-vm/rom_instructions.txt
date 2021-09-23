@@ -1,0 +1,94 @@
+Display: mov 'i', 0x00000000
+Display: mov '\u{1}', 'i'
+Display: call 0xBC
+Display: exit
+Display: ret
+Display: push 'G'
+Display: mov 'G', '\u{1}'
+Display: mov 'i', 0x00000000
+Display: test 'G', 1, 'i'
+Display: jmpc 0x30
+Display: mov 'i', 0x00000000
+Display: mov '\u{0}', 'i'
+Display: pop 'G'
+Display: ret
+Display: mov 'i', 0x00000100
+Display: test 'G', 0, 'i'
+Display: jmpc 0x45
+Display: mov '\u{0}', 'G'
+Display: pop 'G'
+Display: ret
+Display: mov 'i', 0x00000100
+Display: 'i' = alu('G', 4, 'i'
+Display: mov '\u{1}', 'i'
+Display: call 0x10
+Display: pop 'G'
+Display: ret
+Display: pop 'G'
+Display: ret
+Display: push 'G'
+Display: mov 'G', '\u{1}'
+Display: mov 'i', 0x00000002
+Display: test 'G', 1, 'i'
+Display: jmpc 0x7E
+Display: mov 'i', 0x00000001
+Display: mov '\u{0}', 'i'
+Display: pop 'G'
+Display: ret
+Display: mov 'i', 0x00000001
+Display: 'i' = alu('G', 4, 'i'
+Display: mov '\u{1}', 'i'
+Display: call 0x5E
+Display: mov 'x', '\u{0}'
+Display: push 'x'
+Display: mov 'i', 0x00000002
+Display: 'i' = alu('G', 4, 'i'
+Display: mov '\u{1}', 'i'
+Display: call 0x5E
+Display: pop 'x'
+Display: mov 'y', '\u{0}'
+Display: 'i' = alu('x', 3, 'y'
+Display: mov '\u{0}', 'i'
+Display: pop 'G'
+Display: ret
+Display: pop 'G'
+Display: ret
+Display: push 'G'
+Display: mov 'G', '\u{1}'
+Display: mov '\u{1}', 'B'
+Display: call Strlen
+Display: test 'G', 0, '\u{0}'
+Display: jmpc 0x12F
+Display: mov '\u{1}', 'B'
+Display: mov '\u{2}', 'G'
+Display: call CharAt
+Display: mov 'H', '\u{0}'
+Display: push 'H'
+Display: push 'H'
+Display: mov 'i', 0x00000001
+Display: 'i' = alu('G', 3, 'i'
+Display: mov '\u{1}', 'i'
+Display: call 0x5E
+Display: pop 'H'
+Display: 'i' = alu('G', 3, '\u{0}'
+Display: 'i' = alu('H', 3, 'i'
+Display: mov '\u{1}', 'i'
+Display: call 0x10
+Display: pop 'H'
+Display: mov 'H', '\u{0}'
+Display: push 'H'
+Display: push 'H'
+Display: mov '\u{1}', 'H'
+Display: chall Print
+Display: pop 'H'
+Display: pop 'H'
+Display: push 'H'
+Display: push 'H'
+Display: mov 'i', 0x00000001
+Display: 'i' = alu('G', 3, 'i'
+Display: mov '\u{1}', 'i'
+Display: call 0xBC
+Display: pop 'H'
+Display: pop 'H'
+Display: pop 'G'
+Display: ret

@@ -1,0 +1,25 @@
+- There are several files: vm-impl.tgz and vm.rom
+- So it's some kind of custom VM and the ROM is probably meant to run in it
+- vm-impl.tgz decompresses to vm/ and vm-cli/
+- Both are Rust code
+- vm/ seems to just be a library
+- vm-cli/ is presumably the VM itself
+- Building them requires Rust Nightly, as vm-cli use unstable features; install it with:
+	  curl https://sh.rustup.rs -sSf | sh
+- Build vm/ with `cargo build`
+- Build vm-cli/ with `cargo build`
+- Run the vm with `./vm-cli/target/debug/vm-cli vm.rom`
+- It starts giving you the flag, but it slows down and it only gets to "CTF{ThisIsAVeryLongFlagAndY"
+- So we need to figure out how the VM works and what it does
+- It's not too long
+- There's seemingly a commented-out debug section in vm-cli/src/main.rs, let's uncomment that
+- The vm just starts and reads instructions from the ROM
+- Instructions are matched against vm/src/lib.rs
+- self.registers[0] always contains the next characters to print
+- The flag is somehow connected to the INPUT_DATA variable but it's not a straighforward decoding
+- It's possible to get all the instructions from the rom, simple don't execute them and just print them
+- We know the first few characters, let's see how INPUT_DATA relates to their ord() values
+- The differences between the number in INPUT_DATA and the ord() number of the flag appear to follow this sequence: https://www.quora.com/What-comes-after-1-2-4-6-9-13-19
+- But modulo 256
+- So, write a Python script to do the same thing but convert all the data
+- Et voila!
