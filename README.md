@@ -16,7 +16,7 @@ There's one folder for each challenge. There you'll find:
 
 I also try to describe the intuition and how one might approach this kind of problem, as I feel that this is the key skill that CTFs help you develop.
 
-## Useful tools
+## Tools used
 
 These are some of the tools used throughout the writeups:
 
@@ -24,6 +24,7 @@ These are some of the tools used throughout the writeups:
 * [`curl`](https://en.wikipedia.org/wiki/CURL) - A command line utility for requesting URLs. Allows interacting with and automating challenges on the web.
 * [`hexdump`](https://linux.die.net/man/1/hexdump) - A utility for dumping the bytes from a file in [hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) format.
 * [`xxd`](https://linux.die.net/man/1/xxd) - Another ulitity for parsing and dealing with hex values data.
+* [`wc`](https://linux.die.net/man/1/wc) - Utility that counts bytes, characters, words or lines.
 * [Python](https://www.python.org/) - A programming language. Very popular, very powerful and extremely ergonomic and comfortable to program in. It can also be used to write scripts.
 * [CyberChef](https://gchq.github.io/CyberChef/) - A "Swiss Army Knife" of data conversion. Has a huge variety of methods for converting data between different formats (binary, hex, text, etc.).
 
