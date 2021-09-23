@@ -4,7 +4,7 @@
 - Convert NUMBERS to uses a prime numbers generator, taken from https://codegolf.stackexchange.com/a/70027
 - Convert "output = ...; output.append" lines into list comprehensions
 - Reduce function calls across multiple lines into one line
-- Combine the  step1 and step2 functions
+- Combine the step1 and step2 functions
 - Convert all the struct packing functions to just byte addition
 - Convert the byte generation for the 3 blocks into the final bytes
 - Use zip() instead of enumerate to xor the data blocks with the primes
