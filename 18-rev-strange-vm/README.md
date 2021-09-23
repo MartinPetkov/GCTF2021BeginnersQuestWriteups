@@ -140,10 +140,210 @@ Time to dive into the code and/or the ROM and reverse-engineer the flag.
 
 ### Analyzing the Rust VM code
 
+Let's start with [lib.rs](vm/src/lib.rs).
+
+First, there's this:
+
+```rust
+pub type Register = char;
+pub const REG_RV: Register = 0 as Register;
+pub const REG_ARG0: Register = 1 as Register;
+pub const REG_ARG1: Register = 2 as Register;
+pub const REG_FLAG: Register = 0xFF as Register;
+```
+
+It defines some [registers](https://www.tutorialspoint.com/assembly_programming/assembly_registers.htm). Good to know, and suspicious that one of them is `REG_FLAG`.
+
+```rust
+// Instructions
+#[derive(Copy, Clone, Debug)]
+pub enum Instruction {
+    Nop,
+    MovConst { ... },
+    MovReg { ... },
+    MathOp { ... },
+    PushReg(Register),
+    PopReg(Register),
+    PushConst(u32),
+    JmpConst(u32),
+    PopPc,
+    Test { ... },
+    JmpCond(u32),
+    Call(u32),
+    Strlen,
+    CharAt,
+    Print,
+    Exit,
+}
+```
+
+As the comment suggests, these are the instructions supported by the VM.
+
+I'm not too good at reading Rust code, but nothing seemed of particular note in the rest of the code. It basically displaying the instructions and parsing the bytes from the ROM as `Instruction`s. The [Into trait](http://web.mit.edu/rust-lang_v1.25/arch/amd64_ubuntu1404/share/doc/rust/html/std/convert/trait.Into.html) was totally new to me, but it also is uninteresting, it just defines how one type converts into another.
+
+---
+
+Now let's look at [main.rs](vm-cli/src/main.rs).
+
+Immediately, this catches my eye:
+
+```rust
+const INPUT_DATA: [u32; 63] = [
+    66, 82, 66, 117, 75, 91, 86, 87, 31, 51, 222, 187, 112, 236, 9, 98, 34, 69, 0, 198, 150, 29,
+    96, 10, 69, 26, 253, 225, 164, 8, 110, 67, 102, 108, 103, 162, 209, 1, 173, 130, 186, 5, 123,
+    109, 187, 215, 86, 232, 23, 215, 184, 79, 171, 232, 128, 67, 138, 153, 251, 92, 4, 94, 93,
+];
+```
+
+Could this be the flag?
+
+```sh
+$ python -c 'print("".join([chr(i) for i in [66, 82, 66, 117, 75, 91]]))'
+BRBuK[
+```
+
+Alas, not quite, at least not as-is. Let's remember it for later though.
+
+```rust
+struct Vm {
+    f: std::fs::File,
+    registers: [u32; 256],
+    stack: [u32; 64 * 1024],
+    flag: bool,
+    sp: usize,
+}
+```
+
+So the VM has a file (the `vm.rom`), 256 registers, 64 KB of stack space, a `flag` bool, and a stack pointer (`sp`).
+
+```rust
+impl Vm {
+    ....
+
+    fn step(&mut self) -> std::io::Result<()> {
+        let instruction = Instruction::read(&mut self.f)?;
+        //println!("Display: {}", instruction);
+
+        /*
+        let pos = self.f.stream_position()?;
+        println!(
+            "{:04X} | sp={:04} | flg={} | {:?}",
+            pos, self.sp, self.flag, instruction,
+        );
+        for (idx, v) in self.registers.iter().enumerate() {
+            if *v > 0 {
+                println!("{:?} -> {}", idx, v);
+            }
+        }
+        */
+        ...
+    }
+    ...
+}
+```
+
+This is useful. Comments left behind in the source show us how to debug the VM by printing out each instruction and enumerating the registers.
+
+If you uncomment this and try running the `vm.rom` file, the output is massive and there are no immediately obvious patterns. One thing that is useful though is printing out the instructions without running them; this can be done by uncommenting part of this and returning early (before the next section). See the file [rom_instructions.txt](rom_instructions.txt) for an instruction dump.
+
+Moving on.
+
+```rust
+use Instruction::*;
+match instruction {
+    Nop => {}
+    MovConst { reg, v } => self.registers[reg as usize] = v,
+    MovReg { reg, reg2 } => self.registers[reg as usize] = self.registers[reg2 as usize],
+    MathOp {
+        reg_out,
+        reg,
+        op,
+        reg2,
+    } => {
+        let r1 = self.registers[reg as usize];
+        let r2 = self.registers[reg2 as usize];
+        self.registers[reg_out as usize] = match op {
+            3 => r1 + r2,
+            4 => r1 - r2,
+            5 => r1 * r2,
+            6 => r1 / r2,
+            _ => unimplemented!(),
+        };
+    }
+    PushReg(reg) => {
+        self.stack[self.sp] = self.registers[reg as usize];
+        self.sp += 1;
+    }
+    PopReg(reg) => {
+        self.registers[reg as usize] = self.stack[self.sp - 1];
+        self.sp -= 1;
+    }
+    PushConst(c) => {
+        self.stack[self.sp] = c;
+        self.sp += 1
+    }
+    JmpConst(c) => {
+        self.f.seek(std::io::SeekFrom::Start(c as u64))?;
+    }
+    PopPc => {
+        self.f
+            .seek(std::io::SeekFrom::Start(self.stack[self.sp - 1] as u64))?;
+        self.sp -= 1;
+    }
+    Test { reg, op, reg2 } => {
+        self.flag = match op {
+            0 => self.registers[reg as usize] < self.registers[reg2 as usize],
+            1 => self.registers[reg as usize] <= self.registers[reg2 as usize],
+            _ => unimplemented!(),
+        }
+    }
+    JmpCond(c) => {
+        if !self.flag {
+            self.f.seek(std::io::SeekFrom::Start(c as u64))?;
+        }
+    }
+    Call(v) => {
+        self.stack[self.sp] = self.f.stream_position().unwrap() as u32;
+        self.sp += 1;
+        self.f.seek(std::io::SeekFrom::Start(v as u64))?;
+    }
+
+    Strlen => {
+        self.registers[REG_RV as usize] = INPUT_DATA.len() as u32;
+    }
+    CharAt => {
+        let arg2 = self.registers[REG_ARG1 as usize];
+        self.registers[REG_RV as usize] = INPUT_DATA
+            .iter()
+            .nth(arg2 as usize)
+            .map(|v| *v as u32)
+            .unwrap_or(0_u32);
+        //println!("CharAt: {}", self.registers[as usize]);
+    }
+    Print => {
+        let stdout = std::io::stdout();
+        let mut lock = stdout.lock();
+        lock.write_all(&[self.registers[REG_ARG0 as usize] as u8])?;
+        lock.flush()?;
+    }
+    Exit => {
+        std::process::exit(0);
+    }
+};
+```
+
+This is kind of a lot, but all it really is, is the implementations for each instruction. Most are unsurprising, except a few:
+
+* `MathOp` only supports addition, subtraction, multiplication and division.
+* `JmpConst`, `PopPc`, `JmpCond` and `Call` actually seek within the file. That means that program execution can jump around ROM and doesn't just read it start to end.
+* `CharAt` is reading some element of `INPUT_DATA` into a register but not much else.
+* `Print` prints a different register (`REG_ARG0`) on the screen, but cast to [`u8`](https://doc.rust-lang.org/std/primitive.u8.html) (8-bit primitive in Rust).
+
+I can't see any modification of `INPUT_DATA` here, so it must be happening in the ROM. It's likely calling `CharAt`, doing something to it, then calling `Print` and that's what we see on the screen.
+
+### Reversing the flag
+
 TODO
-
-
-
 
 
 
