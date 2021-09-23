@@ -40,7 +40,7 @@ $ wc -c ./encoder.py
 
 7210?! We have our work cut out for us.
 
-*Disclaimer: The final result of this writeup is most likely not "optimal". I'm not an expert golfer, but those that are have been known to do truly wacky and wild stuff to achieve those sweet, sweet low byte numbers. Someone on Discord achieved enlightenment and somehow brought it down to 133 bytes. If you enjoy this kind of thing, try to minify the solution here even further!*
+*Disclaimer: The final result of this writeup is most likely not "optimal". I'm not an expert golfer, but those that are have been known to do truly wacky and wild stuff to achieve those sweet, sweet low byte numbers. Someone on Discord reached enlightenment and somehow brought it down to 133 bytes. If you enjoy this kind of thing, try to minify the solution here even further!*
 
 ### Foreshadowing: Golf steps that will come last
 
@@ -53,7 +53,7 @@ There are a handful of immediately obvious reductions, particularly with Python:
 * Rename all functions and variables to single characters.
 * Rename imports to single characters.
 
-However, we're going to leave this until the very end. That's because to effectively golf code, you need to understand what it's doing in order to combine or eliminate whole swathes of it. The modifications above are trivial to implement but severely hinder comprehension, so it's best to leave them until the end and hope they get us there.
+However, we're going to leave this until the very end. That's because to effectively golf code, you need to understand what it's doing in order to combine or eliminate whole swathes of it. The modifications above are trivial to implement but severely hinder comprehension, so it's best to leave them until the end and hope they get us over the threshold.
 
 ### Analysis of the original
 
@@ -202,16 +202,14 @@ SURELY not all of this is necessary. Let's make some observations:
 
 * `#!/usr/bin/python3` is almost certainly not necessary. This is a [shell directive](https://en.wikipedia.org/wiki/Shebang_(Unix)) and can probably be removed if the file is ran with `python <file>` instead of just `./<file>`.
 * `__all__ = ["encode"]` is used in [module importing](https://stackoverflow.com/questions/44834/can-someone-explain-all-in-python) and can probably be removed if the program directly imports the `encode` function by name.
-* `NUMBERS` is just an array of all the primes up to 7919. We can surely generate this instead of having it expanded like this.
+* `NUMBERS` is just an array of all the primes up to 7919. We can surely generate this instead of having then written out like this.
 * The `encode` function must be left as-is and not renamed, judging by the code in `tester.py`.
 
 (Note: The `#END` at the end is actually necessary when sending it to the server and doesn't contribute to the byte count, so let's ignore it)
 
 This already gives us some ideas. Let's pursue those and see how many bytes we can remove.
 
-### Hole 1: Remove metadata directives.
-
-Let's remove the directives are the top.
+Let's remove the directives are the top as those are trivial, and then we'll look at more substantial optimizations.
 
 ```python
 import struct
@@ -243,11 +241,11 @@ All tests passed!
 
 **Savings:** 47 **Total savings:** 47
 
-### Hole 2: Golf the prime NUMBERS
+### Hole 1: Golf the prime NUMBERS
 
-That `NUMBERS` array can be generated. Now, we can go through the same exercise to golf a small implementation of prime numbers generation, but let's look for one instead, since this is probably a common task in code golf courses.
+That `NUMBERS` array is massive, and it can be generated. Now, we can go through the same exercise to golf a small implementation of prime numbers generation, but let's look for one instead, since this is probably a common task in code golf courses.
 
-I found [this StackOverflow answer](https://codegolf.stackexchange.com/a/70027), which is pretty good, but ultimately we're not looking for an efficient implementation so I went back to the definition of a prime number: that it is not divisible by any smaller number except 1. The way to express that in Python is that you can try to divide by every smaller number and look for a remainder:
+I found [this StackOverflow answer](https://codegolf.stackexchange.com/a/70027), which is pretty good, but ultimately we're not looking for an efficient implementation so let's focus on the definition of a prime number: that it is not divisible by any smaller number except 1. The way to express that in Python is by trying to divide by every smaller number and looking for a remainder:
 
 ```python
 def is_prime(n):
@@ -257,14 +255,14 @@ def is_prime(n):
   return True
 ```
 
-This can be optimized a bit since numbers in Python can be [tested as booleans](https://docs.python.org/3/library/stdtypes.html#truth-value-testing) - for example, is `0` is False and `1` is True. We can also use the [`all()`](https://docs.python.org/3/library/functions.html#all) fucntion to check that all the values are True.
+This can be optimized a bit since in Python numbers can be [tested as booleans](https://docs.python.org/3/library/stdtypes.html#truth-value-testing) - for example, `0` is False and `1` is True. We can also use the [`all()`](https://docs.python.org/3/library/functions.html#all) function to check that all the values are True.
 
 ```python
 def is_prime(n):
   return all([n % i for i in range(2,n)])
 ```
 
-That's nice. Now let's use this in for `NUMBERS`, but since we're not going to reuse the `is_prime` function, let's just inline it.
+That's nice. Now let's use this in for `NUMBERS`, but since we're not going to reuse the `is_prime` function, let's just inline it with a [list comprehension](https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions).
 
 ```python
 NUMBERS = [n for n in range(2,8000) if all(n%i for i in range(2,n))]
@@ -284,7 +282,7 @@ Wonderful!
 
 **Savings:** 6145 **Total savings:** 6192
 
-### Hole 3: Golf the lists
+### Hole 2: Golf the lists
 
 Next, let's look at some of the functions.
 
@@ -313,7 +311,7 @@ def step2_encrypt_data(data_to_encrypt):
   return bytes(bytearray(output))
 ```
 
-We see in two places one line to define the `output` list and several lines to populate it. We also see a for-loop populating a list, which can be converted to a [list comprehension](https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions).
+We see in two places one line to define the `output` list and several lines to populate it. We also see a for-loop populating a list, which can be converted to a list comprehension.
 
 ```python
 def make_tlv(type, byte_data):
@@ -351,7 +349,7 @@ Great!
 
 **Savings:** 200 **Total savings:** 6392
 
-### Hole 4: Combine function calls
+### Hole 3: Combine function calls
 
 It's beginning to get a bit harder to find optimizations. But we can combine the two function calls in `encode`:
 
@@ -359,20 +357,6 @@ It's beginning to get a bit harder to find optimizations. But we can combine the
 def encode(input_data_as_byte_stream):
   return step2_encrypt_data(step1_encode_as_tlv(input_data_as_byte_stream))
 ```
-
-Now:
-
-```sh
-$ ./solve.sh
-Success!
-Testing your code (length 762)...
-Verifying tests...
-All tests passed!
-```
-
-**Savings:** 56 **Total savings:** 6448
-
-### Hole 5: Combine step1 and step2
 
 While we're at it, it seems like step2 uses the output of step1, so let's just combine them and put the code in the encode function.
 
@@ -399,9 +383,9 @@ Verifying tests...
 All tests passed!
 ```
 
-**Savings:** 223 **Total savings:** 6671
+**Savings:** 279 **Total savings:** 6671
 
-### Hole 6: Golf the bytes
+### Hole 4: Golf the bytes
 
 It's definitely getting less obvious what to optimize now. But let's focus for a bit on the remaining function, `make_tlv`.
 
@@ -418,8 +402,8 @@ It's joining some bytes and converting some of the input arguments into bytes. T
 
 * Looking lower down, all the types are 4 characters long so the `[:4]` is unnecessary.
 * The types are static strings that then get converted to bytes. We can just pass them in as bytes to begin with, using Python's [literal bytes syntax](https://docs.python.org/3/library/stdtypes.html#bytes).
-* [`struct`](https://docs.python.org/3/library/struct.html) is used to convert a variable to bytes. We can replace this with [`to_bytes`](https://docs.python.org/3/library/stdtypes.html#int.to_bytes) to save a few characters from omitting `import struct`.
-* Instead of joining a list, we can probably just add all the byte values with `+`.
+* [`struct`](https://docs.python.org/3/library/struct.html) is used to convert a variable to bytes. We can replace this with [`to_bytes`](https://docs.python.org/3/library/stdtypes.html#int.to_bytes) to save a few characters by omitting `import struct`.
+* Instead of joining a list, we can just add all the byte values with `+`.
 
 Let's see where all of these get us.
 
@@ -453,11 +437,11 @@ All tests passed!
 
 **Savings:** 59 **Total savings:** 6730
 
-### Hole 7: Zip and XOR
+### Hole 5: Zip and XOR
 
 What now? There's isn't all that much left to look at or optimize.
 
-Well, one small think we can do is use Python's [`zip`](https://docs.python.org/3/library/functions.html#zip) to join the bytes to XOR and the prime numbers. That should save a handful of bytes.
+Well, one small thing we can do is use Python's [`zip`](https://docs.python.org/3/library/functions.html#zip) to join the bytes to XOR and the prime numbers. That should save a handful of bytes.
 
 ```python
 
@@ -488,9 +472,11 @@ All tests passed!
 
 **Savings:** 36 **Total savings:** 6766
 
-### Hole 8: Inline make_tlv
+### Hole 6: Inline make_tlv
 
-We're getting pretty desparate here. However, we can make aan observation: two of the calls to `make_tlv` use static data. That means that if we inline them and just use the final value, we might save some bytes. The second call will need to be inlined fully since it's not static data, but it should still help.
+We're getting pretty desperate now.
+
+We can make one more observation: two of the calls to `make_tlv` use static data. That means that if we inline them and just use the final value, we might save some bytes. The second call will need to be inlined fully since it's not static data, but it should still help.
 
 The result:
 
@@ -518,7 +504,7 @@ All tests passed!
 
 **Savings:** 94 **Total savings:** 6860
 
-### Hole 9: Add the data bytes
+### Hole 7: Add the data bytes
 
 Similar to before, let's change the `b''.join([...])` to plain byte addition.
 
@@ -530,7 +516,7 @@ def encode(input_data):
   return bytes(d ^ (n & 0xff) for d,n in zip(data, NUMBERS))
 ```
 
-The code is starting to look pretty ugly, and it will only get uglier.
+The code is starting to look pretty ugly.
 
 Let's try it.
 
@@ -544,6 +530,64 @@ All tests passed!
 
 **Savings:** 26 **Total savings:** 6886
 
+### Hole 8: Deduplicate
+
+We're getting close. As a reminder, our target was 235 bytes of space. Maybe the steps we put off till now will get us there, but let's do one more optimization.
+
+There's so little to look at by now, but we can make the observation that the extra bytes in the `END.` block are the same as the ones in the `BEGN` block, just uppercase. Let's save those in a variable and use Python's [`upper()`](https://docs.python.org/3/library/stdtypes.html#str.upper) to convert it.
+
+```python
+NUMBERS = [n for n in range(2,8000) if all(n%i for i in range(2,n))]
+
+def encode(input_data):
+  extra = b'\x00\x00\x00\x1aabcdefghijklmnopqrstuvwxyz'
+  data = b'BEGN' + extra + b'DATA' + len(input_data).to_bytes(4,'big') + input_data + b'END' + extra.upper()
+  return bytes(d ^ (n & 0xff) for d,n in zip(data, NUMBERS))
+```
+
+Let's try it.
+
+```sh
+$ ./solve.sh
+Success!
+Testing your code (length 319)...
+Verifying tests...
+All tests passed!
+```
+
+Didn't help too much.
+
+**Savings:** 5 **Total savings:** 6891
+
+### Hole 9: Uglify
+
+It's time to reach our final form.
+
+Let's apply all the changes from earlier that we've been putting off. This is what you see in [encoder_golfed.py](encoder_golfed.py).
+
+```python.py
+r=range;P=[n&0xff for n in r(2,8000) if all(n%i for i in r(2,n))]
+def encode(t):l=b'\x00\x00\x00\x1aabcdefghijklmnopqrstuvwxyz';return bytes(b^p for b,p in zip(b'BEGN'+l+b'DATA'+len(t).to_bytes(4,'big')+t+b'END.'+l.upper(),P))
+#END
+```
+
+Practically unintelligible, but still a far cry from something like [APL](https://stackoverflow.com/a/17823939).
+
+We run it:
+
+```sh
+$ ./solve.sh
+Success!
+Testing your code (length 226)...
+Verifying tests...
+All tests passed!
+```
+
+And we finally get our flag:
+
+```
+CTF{EncodingSuccessfulIntelReceivedCorrectly}
+```
 
 
 
