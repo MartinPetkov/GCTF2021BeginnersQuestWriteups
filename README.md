@@ -21,6 +21,7 @@ I also try to describe the intuition and how one might approach this kind of pro
 These are some of the tools used throughout the writeups:
 
 * [`bash`](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) - A popular [unix shell](https://en.wikipedia.org/wiki/Unix_shell) that comes with most modern Linux distros. Used in the majority of challenges, since only a few are web-only.
+* [`file`](https://linux.die.net/man/1/file) - A extremely helpful utility which attempts to identify the type of a file. It's important to remember that in Linux, [file extensions](https://en.wikipedia.org/wiki/Filename_extension) inherently have no relation to the file type; that's entirely determined by data in the file.
 * [`curl`](https://en.wikipedia.org/wiki/CURL) - A command line utility for requesting URLs. Allows interacting with and automating challenges on the web.
 * [`hexdump`](https://linux.die.net/man/1/hexdump) - A utility for dumping the bytes from a file in [hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) format.
 * [`xxd`](https://linux.die.net/man/1/xxd) - Another ulitity for parsing and dealing with hex values data.
