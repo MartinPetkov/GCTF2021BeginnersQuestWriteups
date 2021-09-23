@@ -33,22 +33,22 @@ vm-cli/.gitignore
 
 Let's look at the files and see what we're dealing with.
 
-First, the [`.rom`](https://fileinfo.com/extension/rom) file. What is this? According to standard documentation it's extracted memory from a hardware read-only memory chip. Trying to fingerprint it doesn't help:
+First, the [`.rom`](https://fileinfo.com/extension/rom) file. What is this? According to the link from a quick Google search, it's extracted memory from a hardware read-only memory chip. Trying to fingerprint it doesn't help:
 
 ```sh
 $ file vm.rom
 vm.rom: data
+$ strings vm.rom
+$
 ```
 
 For now, let's assume that since the challenge is called "Strange [**Virtual Machine (VM)**](https://en.wikipedia.org/wiki/Virtual_machine)", this `vm.rom` file is just for a VM that we're supposed to run somehow.
-
-Let's look at the rest of the files.
 
 `vm/` and `vm-cli/` look like source trees. [`Cargo.toml`](https://doc.rust-lang.org/cargo/reference/manifest.html) is the machine manifest file used by [`cargo`](https://doc.rust-lang.org/cargo/index.html), the [package manager](https://en.wikipedia.org/wiki/Package_manager) used by the [Rust](https://www.rust-lang.org/) programming language (confirmed by the [`.rs`](https://fileinfo.com/extension/rs) extension on the other files). `cargo` is how we build Rust programs.
 
 ### Building and running the VM
 
-Before even looking at the code, let's try to build it and see what we get. It takes a bit of reading to find out how to install the toolchain and build Rust programs (I'm not a Rust developer normally), but it's not too bad in the end.
+Before even looking at the code, let's try to build it and run it. It takes a bit of reading to find out how to install the toolchain and build Rust programs (I'm not a Rust developer normally), but it's not too bad in the end.
 
 ```sh
 $ cd vm/
@@ -85,7 +85,7 @@ target/debug/incremental/vm-368h5a3ci7fc5/s-g2natv3np2-1c7k6yv-qyx5b7ka4fbv:
 123sl02o6ffrzj1m.o  12udi094mf7sv5ah.o  1pkgoprc2ichfbo0.o  1z4zte6tbeamj4um.o  306y4ebwm6373cw4.o  3yifvic6panetyg.o   463igwcfelb06llx.o  4vwvq7iu5dt9q3i5.o  bs766hd2t76pdbi.o  dep-graph.bin      jg2k6s9dmdf3l20.o  query-cache.bin    zhoj0h5gohwljzj.o
 ```
 
-Okay, so it did a bunch of stuff and generated a bunch of files in the `target/` directory. I don't see anything runnable. Probably this was just library called, given the file was called `lib.rs`.
+Okay, so it did a bunch of stuff and generated a bunch of files in the `target/` directory. I don't see anything runnable. Probably this was just library code, given the file is called `lib.rs`.
 
 ---
 
@@ -131,10 +131,10 @@ Okay, no help or flags or anything, but it does expect a rom. Let's give it what
 
 ```sh
 $ ./vm-cli/target/debug/vm-cli vm.rom
-CTF{ThisIsAVeryLongFlagAndYo^C
+CTF{ThisIsAVeryLongFlagAndYou^C
 ```
 
-The first few characters came out right away, but this quickly slowed down until it took a minute for the last "o" to come out. If we let this run for a few years it will probably spit out the flag, but we don't have that kind of patience.
+The first few characters came out right away, but this quickly slowed down until it took a minute for the last letter to come out. If we let this run for a few years it will probably spit out the flag, but we don't have that kind of patience.
 
 Time to dive into the code and/or the ROM and reverse-engineer the flag.
 
@@ -179,7 +179,7 @@ pub enum Instruction {
 
 As the comment suggests, these are the instructions supported by the VM.
 
-I'm not too good at reading Rust code, but nothing seemed of particular note in the rest of the code. It basically displaying the instructions and parsing the bytes from the ROM as `Instruction`s. The [Into trait](http://web.mit.edu/rust-lang_v1.25/arch/amd64_ubuntu1404/share/doc/rust/html/std/convert/trait.Into.html) was totally new to me, but it also is uninteresting, it just defines how one type converts into another.
+I'm not too good at reading Rust code, but nothing seemed of particular note in the rest of this file. It implements displaying the instructions and parsing the bytes from the ROM as `Instruction`s. The [Into trait](http://web.mit.edu/rust-lang_v1.25/arch/amd64_ubuntu1404/share/doc/rust/html/std/convert/trait.Into.html) was totally new to me, but it also is uninteresting, it just defines how one type converts into another.
 
 ---
 
@@ -332,10 +332,10 @@ match instruction {
 };
 ```
 
-This is kind of a lot, but all it really is, is the implementations for each instruction. Most are unsurprising, except a few:
+This is kind of a lot, but all it really is, is the implementations for each instruction. Only a few things stand out:
 
 * `MathOp` only supports addition, subtraction, multiplication and division.
-* `JmpConst`, `PopPc`, `JmpCond` and `Call` actually seek within the file. That means that program execution can jump around ROM and doesn't just read it start to end.
+* `JmpConst`, `PopPc`, `JmpCond` and `Call` actually seek within the file. That means that program execution can jump around the ROM and doesn't simply read it start to end.
 * `CharAt` is reading some element of `INPUT_DATA` into a register but not much else.
 * `Print` prints a different register (`REG_ARG0`) on the screen, but cast to [`u8`](https://doc.rust-lang.org/std/primitive.u8.html) (8-bit primitive in Rust).
 
@@ -343,14 +343,106 @@ I can't see any modification of `INPUT_DATA` here, so it must be happening in th
 
 ### Reversing the flag
 
-TODO
+At this point, the natural thing would be to start analyzing the ROM instructions and figuring out what they do. There are no binary analysis tools for a custom VM, so you would have to do that by squinting at the instructions and trying to make sense of them.
+
+But I couldn't shake the feeling that `INPUT_DATA` is the flag. It just make sense, and it's also very long, as we would expect.
+
+Let's compare the [ordinal values](https://en.wikipedia.org/wiki/Ordinal_data_type#:~:text=In%20computer%20programming%2C%20an%20ordinal,B'%20the%20second%2C%20etc.) of the letters we know about (from runnning the ROM for a minute or two) with the corresponding values in `INPUT_DATA`.
 
 
 
+| Flag | Ord | INPUT_DATA | Ord - INPUT_DATA |
+| -----|-----|------------|------------------|
+| C | 67 | 66 | 1 |
+| T | 84 | 82 | 2 |
+| F | 70 | 66 | 4 |
+| { | 123 | 117 | 6 |
+| T | 84 | 75 | 9 |
+| h | 104 | 91 | 13 |
+| i | 105 | 86 | 19 |
+| s | 115 | 87 | 28 |
+| I | 73 | 31 | 42 |
+| s | 115 | 51 | 64 |
+| A | 65 | 222 | -157 |
+| V | 86 | 187 | -101 |
+| e | 101 | 112 | -11 |
+| r | 114 | 236 | -122 |
+| y | 121 | 9 | 112 |
+| L | 76 | 98 | -22 |
+| o | 111 | 34 | 77 |
+| n | 110 | 69 | 41 |
+| g | 103 | 0 | 103 |
+| F | 70 | 198 | -128 |
+| l | 108 | 150 | -42 |
+| a | 97 | 29 | 68 |
+| g | 103 | 96 | 7 |
+| A | 65 | 10 | 55 |
+| n | 110 | 69 | 41 |
+| d | 100 | 26 | 74 |
+| Y | 89 | 253 | -164 |
+| o | 111 | 225 | -114 |
+| u | 117 | 164 | -47 |
 
+I mapped out the differences then tried to find a pattern. Initially I thought the difference was the [Fibonnaci Sequence](https://en.wikipedia.org/wiki/Fibonacci_number), but that almost immediately fell apart. Or, it ALMOST did. See below.
 
+| Flag | Ord | INPUT_DATA | Ord - INPUT_DATA | Difference Pattern |
+| -----|-----|------------|------------------|--------------------|
+| C | 67 | 66 | 1 | N/A |
+| T | 84 | 82 | 2 | N/A |
+| F | 70 | 66 | 4 | (2 + 1) + 1 |
+| { | 123 | 117 | 6 | (4 + 2) + 0 |
+| T | 84 | 75 | 9 | (6 + 4) - 1 |
+| h | 104 | 91 | 13 | (9 + 6) - 2 |
+| i | 105 | 86 | 19 | (13 + 9) - 3 |
+| s | 115 | 87 | 28 | (19 + 13) - 4 |
+| I | 73 | 31 | 42 | (28 + 19) - 5 |
+| s | 115 | 51 | 64 | (42 + 28) - 6 |
+| A | 65 | 222 | -157 | (64 + 42) - 7 = 99? |
+| V | 86 | 187 | -101 | ? |
+| e | 101 | 112 | -11 | ? |
+| r | 114 | 236 | -122 | ? |
 
+So what happened at the letter "A"? The pattern held up until that point, then went silly.
 
+Well the negative number should be a clue. Remember how earlier we noted that the `Print` instruction casts to a `u8`? Well, it casts to `u8` from a [`usize`](https://doc.rust-lang.org/std/primitive.usize.html), which can be 32 bits or 64 bits but certainly more than 8 bits. What is likely happening here then is that the value in the registers is increasing as expected, but its overflowing during the 8-bit cast (222 + 99 > 256). Therefore, likely the pattern keeps holding, but to get the real value we need to modulo by 256.
 
+### Re-implementing vm.rom
 
+With all this in mind, to implement the pattern would look roughly like this:
 
+* Initialize `INPUT_DATA` with the known numbers.
+* Initialize the first 2 "diffs" as 1 and 2.
+* Initialize a "delta" value as 1.
+* For each number in `INPUT_DATA`
+  * Calculate the diff as the sum of the last two diffs and the current delta value (except the first two).
+  * Decrease the delta by 1.
+  * Derive the flag character as (the number in `INPUT_DATA` + the diff) modulo 256.
+
+This is implemented in [solve.py](solve.py).
+
+```python
+data  = [
+  66, 82, 66, 117, 75, 91, 86, 87, 31, 51, 222, 187, 112, 236, 9, 98, 34, 69, 0, 198, 150, 29,
+  96, 10, 69, 26, 253, 225, 164, 8, 110, 67, 102, 108, 103, 162, 209, 1, 173, 130, 186, 5, 123,
+  109, 187, 215, 86, 232, 23, 215, 184, 79, 171, 232, 128, 67, 138, 153, 251, 92, 4, 94, 93,
+]
+
+diffs = [1, 2]
+delta = 1
+
+flag = 'CT'
+
+for i, d in enumerate(data[2:]):
+  diff = diffs[-1] + diffs[-2] + delta
+  delta -=1
+  flag += chr((d + diff) % 256)
+  diffs.append(diff)
+
+print(flag)
+```
+
+Running this gives us the flag.
+
+```
+CTF{ThisIsAVeryLongFlagAndYouMightRunOutOfJuiceWhileDecodingIt}
+```
