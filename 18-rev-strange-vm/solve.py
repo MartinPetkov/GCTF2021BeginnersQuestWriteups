@@ -5,7 +5,6 @@ data  = [
 ]
 
 diffs = []
-flag = ''
 delta = 1
 
 for i, d in enumerate(data):
@@ -16,7 +15,7 @@ for i, d in enumerate(data):
   else:
     diff = diffs[-1] + diffs[-2] + delta
     delta -=1
-  flag += chr((d + diff) % 256)
+  print(chr((d + diff) % 256), end='')
   diffs.append(diff)
 
-print(flag)
+print()
