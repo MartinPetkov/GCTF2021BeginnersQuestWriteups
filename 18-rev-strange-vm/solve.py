@@ -4,18 +4,15 @@ data  = [
   109, 187, 215, 86, 232, 23, 215, 184, 79, 171, 232, 128, 67, 138, 153, 251, 92, 4, 94, 93,
 ]
 
-diffs = []
+diffs = [1, 2]
 delta = 1
 
-for i, d in enumerate(data):
-  if len(diffs) < 1:
-    diff = 1
-  elif len(diffs) < 2:
-    diff = 2
-  else:
-    diff = diffs[-1] + diffs[-2] + delta
-    delta -=1
-  print(chr((d + diff) % 256), end='')
+flag = 'CT'
+
+for i, d in enumerate(data[2:]):
+  diff = diffs[-1] + diffs[-2] + delta
+  delta -=1
+  flag += chr((d + diff) % 256)
   diffs.append(diff)
 
-print()
+print(flag)
