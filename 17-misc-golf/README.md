@@ -209,10 +209,340 @@ SURELY not all of this is necessary. Let's make some observations:
 
 This already gives us some ideas. Let's pursue those and see how many bytes we can remove.
 
-### Round 1: Golf the prime NUMBERS
+### Hole 1: Remove metadata directives.
 
-TODO
+Let's remove the directives are the top.
 
+```python
+import struct
+
+NUMBERS = [...]
+
+def make_tlv(type, byte_data):
+  ...
+
+def step1_encode_as_tlv(input_data_as_byte_stream):
+  ...
+
+def step2_encrypt_data(data_to_encrypt):
+  ...
+
+def encode(input_data_as_byte_stream):
+  ...
+#END
+```
+
+Our new size:
+```sh
+$ ./solve.sh
+Success!
+Testing your code (length 7163)...
+Verifying tests...
+All tests passed!
+```
+
+**Savings:** 47 **Total savings:** 47
+
+### Hole 2: Golf the prime NUMBERS
+
+That `NUMBERS` array can be generated. Now, we can go through the same exercise to golf a small implementation of prime numbers generation, but let's look for one instead, since this is probably a common task in code golf courses.
+
+I found [this StackOverflow answer](https://codegolf.stackexchange.com/a/70027), which is pretty good, but ultimately we're not looking for an efficient implementation so I went back to the definition of a prime number: that it is not divisible by any smaller number except 1. The way to express that in Python is that you can try to divide by every smaller number and look for a remainder:
+
+```python
+def is_prime(n):
+  for i in range(2,n):
+    if n % i == 0:
+      return False
+  return True
+```
+
+This can be optimized a bit since numbers in Python can be [tested as booleans](https://docs.python.org/3/library/stdtypes.html#truth-value-testing) - for example, is `0` is False and `1` is True. We can also use the [`all()`](https://docs.python.org/3/library/functions.html#all) fucntion to check that all the values are True.
+
+```python
+def is_prime(n):
+  return all([n % i for i in range(2,n)])
+```
+
+That's nice. Now let's use this in for `NUMBERS`, but since we're not going to reuse the `is_prime` function, let's just inline it.
+
+```python
+NUMBERS = [n for n in range(2,8000) if all(n%i for i in range(2,n))]
+```
+
+Let's see how much progress we made:
+
+```sh
+$ ./solve.sh
+Success!
+Testing your code (length 1018)...
+Verifying tests...
+All tests passed!
+```
+
+Wonderful!
+
+**Savings:** 6145 **Total savings:** 6192
+
+### Hole 3: Golf the lists
+
+Next, let's look at some of the functions.
+
+```python
+def make_tlv(type, byte_data):
+  output = []
+  output.append(bytes(type, "utf-8")[:4])
+  output.append(struct.pack(">I", len(byte_data)))
+  output.append(byte_data)
+  return b''.join(output)
+
+def step1_encode_as_tlv(input_data_as_byte_stream):
+  output = []
+  output.append(make_tlv("BEGN", bytes("abcdefghijklmnopqrstuvwxyz", "utf-8")))
+  output.append(make_tlv("DATA", input_data_as_byte_stream))
+  output.append(make_tlv("END.", bytes("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "utf-8")))
+  return b''.join(output)
+
+def step2_encrypt_data(data_to_encrypt):
+  output = []
+  for i in range(len(data_to_encrypt)):
+    byte_to_encrypt = data_to_encrypt[i]
+    key_number = NUMBERS[i]
+    output.append(byte_to_encrypt ^ (key_number & 0xff))
+
+  return bytes(bytearray(output))
+```
+
+We see in two places one line to define the `output` list and several lines to populate it. We also see a for-loop populating a list, which can be converted to a [list comprehension](https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions).
+
+```python
+def make_tlv(type, byte_data):
+  return b''.join([
+    bytes(type, "utf-8")[:4],
+    struct.pack(">I", len(byte_data)),
+    byte_data
+  ])
+
+def step1_encode_as_tlv(input_data_as_byte_stream):
+  return b''.join([
+    make_tlv("BEGN", bytes("abcdefghijklmnopqrstuvwxyz", "utf-8")),
+    make_tlv("DATA", input_data_as_byte_stream),
+    make_tlv("END.", bytes("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "utf-8"))
+  ])
+  
+def step2_encrypt_data(data_to_encrypt):
+  return bytes(bytearray([
+    data_to_encrypt[i] ^ (NUMBERS[i] & 0xff)
+    for i in range(len(data_to_encrypt))
+  ]))
+```
+
+Let's try it.
+
+```sh
+$ ./solve.sh
+Success!
+Testing your code (length 818)...
+Verifying tests...
+All tests passed!
+```
+
+Great!
+
+**Savings:** 200 **Total savings:** 6392
+
+### Hole 4: Combine function calls
+
+It's beginning to get a bit harder to find optimizations. But we can combine the two function calls in `encode`:
+
+```python
+def encode(input_data_as_byte_stream):
+  return step2_encrypt_data(step1_encode_as_tlv(input_data_as_byte_stream))
+```
+
+Now:
+
+```sh
+$ ./solve.sh
+Success!
+Testing your code (length 762)...
+Verifying tests...
+All tests passed!
+```
+
+**Savings:** 56 **Total savings:** 6448
+
+### Hole 5: Combine step1 and step2
+
+While we're at it, it seems like step2 uses the output of step1, so let's just combine them and put the code in the encode function.
+
+```python
+def encode(input_data):
+  data = b''.join([
+    make_tlv("BEGN", bytes("abcdefghijklmnopqrstuvwxyz", "utf-8")),
+    make_tlv("DATA", input_data),
+    make_tlv("END.", bytes("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "utf-8"))
+  ])
+  return bytes(bytearray([
+    data[i] ^ (NUMBERS[i] & 0xff)
+    for i in range(len(data))
+  ]))
+```
+
+Testing it:
+
+```sh
+$ ./solve.sh
+Success!
+Testing your code (length 539)...
+Verifying tests...
+All tests passed!
+```
+
+**Savings:** 223 **Total savings:** 6671
+
+### Hole 6: Golf the bytes
+
+It's definitely getting less obvious what to optimize now. But let's focus for a bit on the remaining function, `make_tlv`.
+
+```python
+def make_tlv(type, byte_data):
+  return b''.join([
+    bytes(type, "utf-8")[:4],
+    struct.pack(">I", len(byte_data)),
+    byte_data
+  ])
+```
+
+It's joining some bytes and converting some of the input arguments into bytes. There's a few things we can do here:
+
+* Looking lower down, all the types are 4 characters long so the `[:4]` is unnecessary.
+* The types are static strings that then get converted to bytes. We can just pass them in as bytes to begin with, using Python's [literal bytes syntax](https://docs.python.org/3/library/stdtypes.html#bytes).
+* [`struct`](https://docs.python.org/3/library/struct.html) is used to convert a variable to bytes. We can replace this with [`to_bytes`](https://docs.python.org/3/library/stdtypes.html#int.to_bytes) to save a few characters from omitting `import struct`.
+* Instead of joining a list, we can probably just add all the byte values with `+`.
+
+Let's see where all of these get us.
+
+```python
+NUMBERS = [n for n in range(2,8000) if all(n%i for i in range(2,n))]
+
+def make_tlv(type, byte_data):
+  return type + len(byte_data).to_bytes(4,'big') + byte_data
+
+def encode(input_data):
+  data = b''.join([
+    make_tlv(b"BEGN", bytes("abcdefghijklmnopqrstuvwxyz", "utf-8")),
+    make_tlv(b"DATA", input_data),
+    make_tlv(b"END.", bytes("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "utf-8"))
+  ])
+  return bytes(bytearray([
+    data[i] ^ (NUMBERS[i] & 0xff)
+    for i in range(len(data))
+  ]))
+```
+
+Let's try it.
+
+```sh
+$ ./solve.sh
+Success!
+Testing your code (length 480)...
+Verifying tests...
+All tests passed!
+```
+
+**Savings:** 59 **Total savings:** 6730
+
+### Hole 7: Zip and XOR
+
+What now? There's isn't all that much left to look at or optimize.
+
+Well, one small think we can do is use Python's [`zip`](https://docs.python.org/3/library/functions.html#zip) to join the bytes to XOR and the prime numbers. That should save a handful of bytes.
+
+```python
+
+```python
+NUMBERS = [n for n in range(2,8000) if all(n%i for i in range(2,n))]
+
+def make_tlv(type, byte_data):
+  return type + len(byte_data).to_bytes(4,'big') + byte_data
+
+def encode(input_data):
+  data = b''.join([
+    make_tlv(b"BEGN", bytes("abcdefghijklmnopqrstuvwxyz", "utf-8")),
+    make_tlv(b"DATA", input_data),
+    make_tlv(b"END.", bytes("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "utf-8"))
+  ])
+  return bytes(d ^ (n & 0xff) for d,n in zip(data, NUMBERS))
+```
+
+Let's try it.
+
+```sh
+$ ./solve.sh
+Success!
+Testing your code (length 444)...
+Verifying tests...
+All tests passed!
+```
+
+**Savings:** 36 **Total savings:** 6766
+
+### Hole 8: Inline make_tlv
+
+We're getting pretty desparate here. However, we can make aan observation: two of the calls to `make_tlv` use static data. That means that if we inline them and just use the final value, we might save some bytes. The second call will need to be inlined fully since it's not static data, but it should still help.
+
+The result:
+
+```python
+NUMBERS = [n for n in range(2,8000) if all(n%i for i in range(2,n))]
+
+def encode(input_data):
+  data = b''.join([
+    b'BEGN\x00\x00\x00\x1aabcdefghijklmnopqrstuvwxyz',
+    b'DATA' + len(input_data).to_bytes(4,'big') + input_data,
+    b'END.\x00\x00\x00\x1aABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  ])
+  return bytes(d ^ (n & 0xff) for d,n in zip(data, NUMBERS))
+```
+
+Let's try it.
+
+```sh
+$ ./solve.sh
+Success!
+Testing your code (length 350)...
+Verifying tests...
+All tests passed!
+```
+
+**Savings:** 94 **Total savings:** 6860
+
+### Hole 9: Add the data bytes
+
+Similar to before, let's change the `b''.join([...])` to plain byte addition.
+
+```python
+NUMBERS = [n for n in range(2,8000) if all(n%i for i in range(2,n))]
+
+def encode(input_data):
+  data = b'BEGN\x00\x00\x00\x1aabcdefghijklmnopqrstuvwxyz' + b'DATA' + len(input_data).to_bytes(4,'big') + input_data + b'END.\x00\x00\x00\x1aABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  return bytes(d ^ (n & 0xff) for d,n in zip(data, NUMBERS))
+```
+
+The code is starting to look pretty ugly, and it will only get uglier.
+
+Let's try it.
+
+```sh
+$ ./solve.sh
+Success!
+Testing your code (length 324)...
+Verifying tests...
+All tests passed!
+```
+
+**Savings:** 26 **Total savings:** 6886
 
 
 
