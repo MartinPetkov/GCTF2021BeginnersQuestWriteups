@@ -160,7 +160,7 @@ def check(code):
 
 We need to understand what input code will make the function return True, so we can use that as the flag. To do that, we need to "undo" the operations in reverse order.
 
-First, we know that `x` ANDed with 4 numbers produces 4 other numbers (`a`, `b`, `c` and `d`). Intiutively, this can be solved as a set of linear equations, but in practice it's a bit more complicated.
+First, we know that `x` ANDed with 4 numbers produces 4 other numbers (`a`, `b`, `c` and `d`). Intuitively, this can be solved as a set of linear equations, but in practice it's a bit more complicated.
 
 AND is not a directly reversible operation. If we know the result and one operand, we can only determine the following:
 

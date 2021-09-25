@@ -127,7 +127,7 @@ $ ./vm-cli/target/debug/vm-cli
 Missing ROM
 ```
 
-Okay, no help or flags or anything, but it does expect a rom. Let's give it what it wants.
+Okay, no help or flags or anything, but it does expect a ROM. Let's give it what it wants.
 
 ```sh
 $ ./vm-cli/target/debug/vm-cli vm.rom

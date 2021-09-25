@@ -74,7 +74,7 @@ $ file chall.txt
 chall.txt: DOS executable (COM)
 ```
 
-It's almost certainly not actually a DOS executable. That wasn't one of the encodings, and I kind of just hope I don't have to figure out how to run a DOS exuctable in the year 2021.
+It's almost certainly not actually a DOS executable. That wasn't one of the encodings, and I kind of just hope I don't have to figure out how to run a DOS executable in the year 2021.
 
 ```
 $ cat chall.txt
@@ -93,7 +93,7 @@ Let's ignore the Chinese characters then. That's probably my poor undeserving sh
 
 So which of the other encodings is it? It's naive to assume they're given in order, but honestly a high base encoding might make sense here.
 
-Let's try a few bases in [Cyber Chef](https://gchq.github.io/CyberChef/) (a wonderful tool, especially for CTFs). Unfortunately, it only goes as high as base85, and that gives this error:
+Let's try a few bases in [CyberChef](https://gchq.github.io/CyberChef/) (a wonderful tool, especially for CTFs). Unfortunately, it only goes as high as base85, and that gives this error:
 
 ```
 From Base85 - Invalid character '魦' at index 0
@@ -119,7 +119,7 @@ There is the [linked library](https://github.com/qntm/base65536), of course, (wh
 
 ![Decode base65536](base65536_decode.png)
 
-This looks more promising! Not only does it succeed, but you can kind of see a pattern in the hex. There's a funbh of values, then lots of 7s, 5s, 6s and 1s. Let's save our progress.
+This looks more promising! Not only does it succeed, but you can kind of see a pattern in the hex. There's a bunch of values, then lots of 7s, 5s, 6s and 1s. Let's save our progress.
 
 **The file is [chall.base65536_decoded](chall.base65536_decoded)**
 
@@ -187,7 +187,7 @@ Artist                          : zaeeaeeuewawaweeeuuwaawuwueeuwaawuwaaawuuuuwuw
 ...
 ```
 
-Well now! This looks like what we're actually looking for. It goes on for many many lines and clearly has a pattern, consisting only of the lettes `zaeuw`. Let's take another break.
+Well now! This looks like what we're actually looking for. It goes on for many many lines and clearly has a pattern, consisting only of the letters `zaeuw`. Let's take another break.
 
 **The file is [chall.from_artist](chall.from_artist)**
 
@@ -468,7 +468,7 @@ This is where I and everyone got utterly stuck. You practically NEED help to div
 I'm sad to admit I had no clue how to progress until I got this nudge:
 
 ```
-Try different bases, look for a pattern. 
+Try different bases, look for a pattern.
 ```
 
 And so I did.

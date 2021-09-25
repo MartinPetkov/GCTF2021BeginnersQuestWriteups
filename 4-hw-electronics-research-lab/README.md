@@ -25,7 +25,7 @@ Googling "pico hardware" quickly leads us to discover that the [Raspberry Pi Pic
 
 What is a uf2 file? Well, googling it leads to [Microsoft UF2](https://github.com/microsoft/uf2):
 
->UF2 is a file format, developed by Microsoft for [PXT](https://github.com/Microsoft/pxt) (also known as [Microsoft MakeCode](https://makecode.com/)), that is particularly suitable for flashing microcontrollers over MSC (Mass Storage Class; aka removable flash drive).<br/><br/>
+>UF2 is a file format, developed by Microsoft for [PXT](https://github.com/Microsoft/pxt) (also known as [Microsoft MakeCode](https://makecode.com/)), that is particularly suitable for flashing micro-controllers over MSC (Mass Storage Class; aka removable flash drive).<br/><br/>
 >For a more friendly explanation, check out [this blog post](https://makecode.com/blog/one-chip-to-flash-them-all). Also, take a look at the list of [implementations](https://github.com/microsoft/uf2#implementations) at the bottom of this document.
 
 Great! More progress. Let's see if we can run the uf2 file somehow

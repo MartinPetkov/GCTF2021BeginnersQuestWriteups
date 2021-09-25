@@ -5,7 +5,7 @@ Category: `misc`
 ## Story
 
 >Well, okay, you’re back in the cell again, and they changed the lock to something quite heavier. This one cannot be picked with a paperclip… So, is this where the mission ends? PLING, another message from the boss. Another GIF… No wait, not only a GIF, also text: "Hi AGENT, I was just contacting you to say that we’re running out of time, if you fail to reach the office and pull the self destruction lever in under 30 minutes, they will already have executed their evil plan. I’m counting on you!." Well, that wasn’t too helpful... What to do, what to do?<br/><br/>
->I heard BotBot, the resident Discord bot, is experimenting with hashing. He specifically wants to see 2 different strings, both starting with `gctf`, that have the same md5 hash. He will reward this with a flag. You can access our Discord with the following invite link: https://discord.gg/FbrXTjvv To solve this challenge DM BotBot on discord using the command `!hashme` followed by the two strings, encoded in hex. E.g. if your strings are "gctfhello" and "gctfhola" you would send `!hashme 6763746668656c6c6f 67637466686f6c61`
+>I heard BotBot, the resident Discord bot, is experimenting with hashing. He specifically wants to see 2 different strings, both starting with `gctf`, that have the same MD5 hash. He will reward this with a flag. You can access our Discord with the following invite link: https://discord.gg/FbrXTjvv To solve this challenge DM BotBot on discord using the command `!hashme` followed by the two strings, encoded in hex. E.g. if your strings are "gctfhello" and "gctfhola" you would send `!hashme 6763746668656c6c6f 67637466686f6c61`
 
 ## Solution
 
@@ -19,7 +19,7 @@ We are asked to produce 2 different strings, both starting with `gctf`, that hav
 
 Or is it?
 
-"Hashing" on its own is abstract and must be implemented as a real algorithm in order to be useful. There appear to be [many cryptographic hash algorithms](https://en.wikipedia.org/wiki/Cryptographic_hash_function#Cryptographic_hash_algorithms) out there, but why is that? Well, looking at the [comparison](https://en.wikipedia.org/wiki/Comparison_of_cryptographic_hash_functions) and the [security summary](https://en.wikipedia.org/wiki/Hash_function_security_summary) (all linked directly from the earlier wikipedia page), we can clearly see that some are more "secure" than others. Some algorithms implement the required properties really well, and others do so poorly (by today's standards; hash functions historically been considered safe but then been "broken" after enough time and research focus; it's reasonable to assume all of today's "secure" hash algorithms may eventually be broken).
+"Hashing" on its own is abstract and must be implemented as a real algorithm in order to be useful. There appear to be [many cryptographic hash algorithms](https://en.wikipedia.org/wiki/Cryptographic_hash_function#Cryptographic_hash_algorithms) out there, but why is that? Well, looking at the [comparison](https://en.wikipedia.org/wiki/Comparison_of_cryptographic_hash_functions) and the [security summary](https://en.wikipedia.org/wiki/Hash_function_security_summary) (all linked directly from the earlier Wikipedia page), we can clearly see that some are more "secure" than others. Some algorithms implement the required properties really well, and others do so poorly (by today's standards; hash functions historically been considered safe but then been "broken" after enough time and research focus; it's reasonable to assume all of today's "secure" hash algorithms may eventually be broken).
 
 A common pattern in each of these pages is that MD5 is a at the bottom of the list and considered hopelessly insecure. Some choice quotes:
 
@@ -37,7 +37,7 @@ It wouldn't be interesting to recreate the research process here. It's really ju
 * [MD5 and SHA-1 Collision Attacks: A Tutorial](http://koclab.cs.ucsb.edu/teaching/cren/project/2008/savage.pdf)
 * [Peter Sellinger: MD5 Collision Demo](https://www.mscs.dal.ca/~selinger/md5collision/) (the "evilize" library)
 * [Marc Stevens: Single-block collision attack on MD5](https://marc-stevens.nl/research/md5-1block-collision/)
-* [HashClash](https://github.com/cr-marcstevens/hashclash) (this one is also in the "See also" section of the MD5 wikipedia page).
+* [HashClash](https://github.com/cr-marcstevens/hashclash) (this one is also in the "See also" section of the MD5 Wikipedia page).
 
 HashClash is the most interesting of these because it has a section specifically about [creating your own identical-prefix collision](https://github.com/cr-marcstevens/hashclash#create-you-own-identical-prefix-collision). It says the prefix should be a multiple of 64 bytes, but optionally a small multiple of 4 bytes. Our prefix `gctf` is 4 bytes, so this fits.
 

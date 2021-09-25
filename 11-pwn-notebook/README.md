@@ -265,7 +265,7 @@ $ objdump -drwC -M intel ./notebook
 
 But that alone is going to be extremely hard to work with unless you're an experienced assembly developer. Even then, this isn't an ideal approach.
 
-Much better for your sanity are dedicated dissassembly/reversing tools:
+Much better for your sanity are dedicated disassembly/reversing tools:
 
 * [IDA Pro](https://hex-rays.com/ida-pro/) - I've heard great things about it but you need to be made of money (or work for a company who is) to afford it.
 * [Ghidra](https://ghidra-sre.org/) - The free competitor to IDA Pro, made by the NSA. Many people's preferred choice and pretty full-featured.
