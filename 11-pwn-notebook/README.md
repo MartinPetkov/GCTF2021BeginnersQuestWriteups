@@ -4,7 +4,7 @@ Category: `pwn`
 
 ## Story
 
->Wow, it’s a crowded day at Heathrow, lots of suits that bump into each other and try to catch their plane. You have to find the gate to the secret warehouse, it cannot be far away. You see a suspicious suit go into a fast food court and you spot him disappear behind the checkout. Hmmm, odd?! You follow, and when no one sees you follow him. You go through a desolated kitchen, it stinks, you cover your nose with the back of your hand. You pass through a small entrance, and enter the secret warehouse, wow, it’s vast!<br/><br/>
+>Wow, it’s a crowded day at Heathrow, lots of suits that bump into each other and try to catch their plane. You have to find the gate to the secret warehouse, it cannot be far away. You see a suspicious suit go into a fast food court and you spot him disappear behind the checkout. Hmmm, odd?! You follow, and when no one sees you follow him. You go through a desolate kitchen. It stinks, you cover your nose with the back of your hand. You pass through a small entrance, and enter the secret warehouse, wow, it’s vast!<br/><br/>
 >Please help me restore my deleted note.
 
 ## Solution
@@ -31,7 +31,7 @@ We have a single binary and no source code. Presumably that's the same binary ru
 Since we're not given source code, there's really only two ways to approach this kind of challenge:
 
 1. Interact with the binary or the hosted service, try different inputs and observe the effects (dynamic analysis).
-1. Decompile it and try to make sense of the assembly code (static analysis).
+1. [Disassemble](https://en.wikipedia.org/wiki/Disassembler) or [decompile](https://en.wikipedia.org/wiki/Decompiler) the binary and try to make sense of the assembly code (static analysis).
 
 We're going to do both, since they can each give us tons of information.
 
@@ -140,7 +140,7 @@ Here's a list of our notes:
  - 09. length: 000, state: DELETED
 ```
 
-Nothing changed, unsurprisingly.
+Nothing changed, which is a little curious. Deleting doesn't erase the contents, since the lenght of note 3 is still 40.
 
 What about adding a note?
 
@@ -173,7 +173,7 @@ This is interesting! The first note added takes the place of the earliest DELETE
 
 ### Trying weird inputs
 
-Something always worth trying in `pwn` challenges is "bad" or unexpected inputs. Let's see how the binary handles some of them.
+Something always worth trying in `pwn` challenges is "bad" or unexpected inputs. Let's see how the binary handles some.
 
 A negative choice selection (bounds bypass?):
 
@@ -267,9 +267,9 @@ But that alone is going to be extremely hard to work with unless you're an exper
 
 Much better for your sanity are dedicated disassembly/reversing tools:
 
-* [IDA Pro](https://hex-rays.com/ida-pro/) - I've heard great things about it but you need to be made of money (or work for a company who is) to afford it.
+* [IDA Pro](https://hex-rays.com/ida-pro/) - I've heard great things about it but you need to be made of money (or work for a company which is) to afford it.
 * [Ghidra](https://ghidra-sre.org/) - The free competitor to IDA Pro, made by the NSA. Many people's preferred choice and pretty full-featured.
-* [radare2](https://github.com/radareorg/radare2) - Notable for being a command-line only tool, not a graphical application. This can be fantastic if you're without a graphical environment. I've heard it's great but quite hard to pick up.
+* [radare2](https://github.com/radareorg/radare2) - Notable for working on the command-line. This can be fantastic if you're without a graphical environment, such as when `ssh`ing to another computer. I've heard it's great but quite hard to pick up.
 * [cutter](https://cutter.re/) - Another nice free disassembler with a GUI. I'm not familiar with it.
 * [Binary Ninja Cloud](https://cloud.binary.ninja/) - Free and notable for being a SaaS app, making it hugely convenient since you don't need to install anything.
 
@@ -283,7 +283,7 @@ Let's first look at `main`.
 
 ![The main function in Binary Ninja Cloud](main.png)
 
-This looks like the standard loop the asks for your command choice. It's nice that the function names were preserved and not obfuscated.
+This looks like the standard loop that asks for your command choice. It's nice that the function names were preserved and not obfuscated.
 
 We could look at any of these but I'm going to start with `print_note` to see if maybe there's a way to bypass the "is DELETED" check.
 
@@ -297,7 +297,7 @@ There's not too much going on here. It only supports 9 notes. The line
 
 is hard to read, but it's most likely accessing a field in a list of structs, with the input (`rdx_1`) used as the offset.
 
-There's also `__stack_chk_fail()` which sounds like part of a [stack canary](https://en.wikipedia.org/wiki/Buffer_overflow_protection#Canaries) protection, which we're not going to bypass easily (remember, this is "Beginners" Quest - likely the intended approach is supposed to be simple).
+There's also `__stack_chk_fail()` which sounds like part of a [stack canary](https://en.wikipedia.org/wiki/Buffer_overflow_protection#Canaries) protection, which we're not going to bypass easily (remember, this is "Beginners" Quest - the intended approach is supposed to be fairly easy).
 
 There's also the curious function `catsay` (called it!). It's not a standard Linux command, so it's probably custom for this challenge. Let's look a bit deeper.
 
@@ -316,7 +316,7 @@ At this point I had a hunch. Does `print_line` sanitize the input in any way?
 
 Do you see it?
 
-It's a bit hard to trace due to the calls to `strncpy` and `strncat`, but ultimately our input is passed unmodified to [`printf`](https://linux.die.net/man/3/printf). That's a classic indicator of a possible [format string vulnerability](https://en.wikipedia.org/wiki/Uncontrolled_format_string).
+It's a bit hard to trace due to the calls to [`strncpy`](https://linux.die.net/man/3/strncpy) and [`strncat`](https://linux.die.net/man/3/strncat), but ultimately our input is passed unmodified to [`printf`](https://linux.die.net/man/3/printf). That's a classic indicator of a possible [format string vulnerability](https://en.wikipedia.org/wiki/Uncontrolled_format_string).
 
 But does it work?
 
@@ -342,15 +342,17 @@ Of the [formats available to us](https://en.wikipedia.org/wiki/Printf_format_str
 
 I'd kind of like to avoid the `%n` trick as I find it convoluted and tricky to get exactly right. But I have no doubt it's exploitable to un-delete our target note.
 
-Instead let's see if we can print memory. This assumes the note is somewhere in memory after the code that's executing, but maybe we're lucky this way. An important concept to understand here is the [parameter field](https://en.wikipedia.org/wiki/Printf_format_string#Parameter_field). This lets us specify a specific argument. For example, to print the 3rd arg as a pointer:
+Instead let's see if we can print memory. This assumes the note is somewhere in memory AFTER the location of the code that's executing, but maybe we're lucky this way.
+
+An important concept to understand here is the [parameter field](https://en.wikipedia.org/wiki/Printf_format_string#Parameter_field). This lets us specify a specific argument. For example, to print the 3rd arg as a pointer:
 
 ```
 %3$p
 ```
 
-With an uncontrolled format string, the "arguments" are just the rest of memory. That means we can increase this field to print any section of memory. This might work!
+With an unsanitized format string, the "arguments" are just the rest of memory. That means we can increase this field to print any section of memory. This might work!
 
-As usual I followed the simplest solution. I wrote a script to generate commands that print 1 section of memory, pipe them into the service, and try to decode the hex as ASCII. See [solve.sh](solve.sh) and [gencommands.sh](gencommands.sh).
+As usual I followed the simplest solution. I wrote a script to generate commands that print 1 section of memory, pipe them into the service, and try to decode the hex as ASCII. See [dumpmemory.sh](dumpmemory.sh) and [gencommands.sh](gencommands.sh), as well as [dumpedmemory.txt](dumpedmemory.txt) for an example.
 
 The output from running it is pretty difficult to read, but we do indeed get a very interesting group of values:
 
@@ -366,7 +368,7 @@ $ ./solve.sh
 ...
 ```
 
-This can be manually decoded by reading top-to-bottom to get the flag (bytes were reversed by the script to account for [endianness](https://en.wikipedia.org/wiki/Endianness)):
+This can be manually decoded by reading top-to-bottom (bytes were reversed by the script to account for [endianness](https://en.wikipedia.org/wiki/Endianness)) but is also automated in [solve.sh](solve.sh). This gets us the flag.
 
 ```
 CTF{format_string_for_the_win}

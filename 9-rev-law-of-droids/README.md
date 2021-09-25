@@ -1,6 +1,6 @@
 # Challenge #9 - Law of Droids
 
-Category: `reversing`
+Category: `rev`
 
 ## Story
 
@@ -53,7 +53,7 @@ gCTF/unknown/gCTF3 $ ls
 app  build.gradle  gradle  gradle.properties  gradlew  gradlew.bat  local.properties  settings.gradle
 ```
 
-You can explore various things here. The various [gradle](https://gradle.org/) and properties files can give you the flags used to build this, and presumably how to run it in the emulator.
+You can explore various things here. The files related to [gradle](https://gradle.org/) and the properties files can give you the flags used to build this, and presumably how to run it in the emulator.
 
 Let's continue on and try to find a Main class.
 
@@ -89,17 +89,15 @@ There's an [Android Manifest](https://developer.android.com/guide/topics/manifes
 </manifest>
 ```
 
-Most of this is uninteresting but it does tell us that there's one [activity](https://developer.android.com/reference/android/app/Activity) called `MainActivity` and that it both reads and writes to storage (see the `uses-permission` lines). Hopefully this isn't too much of a stretch, but it suggests to me that the flag isn't embedded in the apk but is instead written to or read from the Linux image from earlier.
+Most of this is uninteresting but it does tell us that there's one [activity](https://developer.android.com/reference/android/app/Activity) called `MainActivity` and that it both reads and writes to storage (see the `uses-permission` lines). Hopefully this doesn't seem like too much of a stretch, but I suspect the flag isn't embedded in the apk but is instead written to or read from the Linux image from earlier.
 
-Let's look at the main file:
+Let's look at [the MainActivity.java file](apk-extract/gCTF/unknown/gCTF3/app/src/main/java/gctf/researchctf/MainActivity.java).
 
 ```sh
 gCTF/unknown/gCTF3/app/src/main $ cd java/gctf/researchctf/
 gCTF/unknown/gCTF3/app/src/main/java/gctf/researchctf $ ls
 MainActivity.java
 ```
-
-Let's look at [the MainActivity.java file](apk-extract/gCTF/unknown/gCTF3/app/src/main/java/gctf/researchctf/MainActivity.java).
 
 ```java
 private EditText tv = null;
@@ -117,7 +115,9 @@ public native String getCTF(String enteredKey);
 public native int validateCTF(String enteredKey);
 ```
 
-These register the use of [native libraries](https://developer.android.com/studio/projects/add-native-code), via C++ code. This is probably inside the `cpp/` folder earlier. Two of these functions clearly operate on the flag too, so we should definitely check them out.
+These register the use of [native libraries](https://developer.android.com/studio/projects/add-native-code), via C++ code. This is probably inside the `cpp/` folder from earlier. Two of these functions clearly operate on the flag too, so we should definitely check them out.
+
+---
 
 ```java
 @Override
@@ -143,9 +143,11 @@ protected void onCreate(Bundle savedInstanceState) {
 }
 ```
 
-I can't say I'm 100% sure what's going on here, but the [docs](https://developer.android.com/reference/android/app/Activity#onCreate(android.os.Bundle)) say that this code runs when the activity is starting and where initialization code should go. It appears to write two files, "Raven.txt" and "SusanSue.txt". Those files have slightly different key formatting; `Sctf:key:` for "SusanSue.txt" and `BKUP:KEY:SecretKey:P@$$` for "Raven.txt".
+I can't say I'm 100% sure what's going on here, but the [docs](https://developer.android.com/reference/android/app/Activity#onCreate(android.os.Bundle)) explain that this code runs when the activity is starting and contains initialization code. It appears to write two files, "Raven.txt" and "SusanSue.txt". Those files have slightly different key formatting; `Sctf:key:` for "SusanSue.txt" and `BKUP:KEY:SecretKey:P@$$` for "Raven.txt".
 
 Now of course, `CTF{P@$$}` doesn't work. It wouldn't be that easy. So probably there's a SusanSue.txt file in the Linux image which contains the password.
+
+---
 
 ```java
 public void read(View view) {
@@ -167,6 +169,8 @@ public void read(View view) {
 ```
 
 This just reads a text input and checks it against the expected string.
+
+---
 
 ### Exploring the native library
 
@@ -200,6 +204,8 @@ Java_gctf_researchctf_MainActivity_stringFromJNI(
 
 This was only used once in the Activity. It suggests the app expects the user to input a key in the form `gCTF:KEY:<key>`.
 
+---
+
 ```cpp
 extern "C"
 JNIEXPORT jstring JNICALL
@@ -216,6 +222,8 @@ Java_gctf_researchctf_MainActivity_getCTF(JNIEnv *env, jobject thiz, jstring ent
 ```
 
 This is a pretty big clue. It looks for a SusanSue.txt file and reads it out.
+
+---
 
 ```cpp
 extern "C"
@@ -244,6 +252,8 @@ Java_gctf_researchctf_MainActivity_validateCTF(JNIEnv *env, jobject thiz, jstrin
 This is a pretty big clue as well. It's comparing the user input against the contents of the SusanSue.txt file.
 
 This gives us enough to continue. Let's go look for the flag in the Linux image.
+
+---
 
 ### Searching for the flag in the Linux image
 

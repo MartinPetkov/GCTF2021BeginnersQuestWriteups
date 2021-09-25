@@ -11,7 +11,6 @@ So, try to convert the last 3 streams of the CSV to RGB bytes and load into GIMP
 def normalize(float_color_val):
   return int((float_color_val + 0.5) * 255)
 
-# Process stdin
 with open(f'all.data', 'wb') as allf:
   for i in range(1,8):
     with open(f'{i}.csv', 'r') as f:

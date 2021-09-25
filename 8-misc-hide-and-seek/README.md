@@ -26,7 +26,7 @@ We only have one image. It doesn't look like anything:
 
 So the flag must be hidden in the image somehow.
 
-There's nothing of note from exiftool
+There's nothing of note from exiftool:
 
 ```sh
 $ exiftool hideandseek.png
@@ -164,7 +164,7 @@ What is all this? We see a whole bunch of `IDAT` and `eDIH`, and both `{` and `}
 A valid PNG image must contain an IHDR chunk, one or more IDAT chunks, and an IEND chunk
 ```
 
-We see that here. But that page does not mention "eDIH" and I'm not sure what that is. However, it's likely another type of chunk, so let's find out how to read those chunks directly.
+We see that here. But that page does not mention "eDIH". It's likely another type of chunk, so let's find out how to read those chunks directly.
 
 ## Reading chunks
 

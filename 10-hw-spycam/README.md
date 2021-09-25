@@ -59,7 +59,7 @@ So we have hundreds of thousands of lines of seemingly random decimals. Could th
 
 ### Looking for patterns
 
-Let's try to see some patterns.
+Let's try to find some patterns.
 
 The first field seems obviously different from the rest. It's a float with much higher precision, and in each file it is strictly increasing from top to bottom. In fact, the values may well be the same in each file:
 
@@ -148,11 +148,11 @@ $ cat <(cat *.csv | cut -d, -f3) <(cat *.csv | cut -d, -f4) <(cat *.csv | cut -d
      16 0.3
 ```
 
-They pretty clearly follow a similar distribution. This is a bit of a guess but probably the range is -0.5 to 0.5.
+They pretty clearly follow a distribution too. This is a bit of a guess but probably the range is -0.5 to 0.5.
 
 ### Decoding the signal
 
-I still don't have a real clue what this is, but the fact that it's video feed with 3 similar channels make me think of those old school RGB cables.
+I still don't have a real clue what this is, but the fact that it's supposed to be a video feed and 3 of the channels are similar makes me think of those old school RGB cables.
 
 ![Old schoool RGB cables](rgb_cables.jpg)
 
@@ -174,7 +174,6 @@ So, try to convert the last 3 streams of the CSV to RGB bytes and load into GIMP
 def normalize(color_val):
   return int((float(color_val) + 0.5) * 255)
 
-# Process stdin
 with open(f'all.data', 'wb') as allf:
   for i in range(1,8):
     with open(f'{i}.csv', 'r') as f:
@@ -193,7 +192,7 @@ with open(f'all.data', 'wb') as allf:
       allf.write(B.to_bytes(1, byteorder='little', signed=False))
 ```
 
-The values are written out as plain bytes, since I'm using GIMP and it supports loading [raw image data](https://stackoverflow.com/a/32393367). Of course, since it doesn't have width or height information, we'll have to adjust that manually until we get something that looks like a picture.
+The values are written out as plain bytes, since I'm using [GIMP](https://www.gimp.org/) and it supports loading [raw image data](https://stackoverflow.com/a/32393367). Of course, since it doesn't have width or height information, we'll have to adjust that manually until we get something that looks like a picture.
 
 Here's the original:
 
@@ -214,7 +213,7 @@ CTF{V1de0G
 ```
 
 Which looks like English. It's "video g\<something\>".
- 
+
 At this point I have to admit that I was stuck, until a helpful stranger on Discord showed me this version of the video feed that they had somehow construed (my best attempt at recording their approach is in [convert_to_rgb.py](convert_to_rgb.py)):
 
 ![OCR layer from the video feed](ocr.png)
@@ -238,7 +237,7 @@ How? Well:
 * There's no common leet equivalent for 'c' or 'r'. Those are probably just 'c' and 'r'.
 * The letters look like they're lowercase except the first letter, like an acronym. So let's assume lowercase 'c' and 'r'.
 * The first 'g' is actually 'G'.
-* The 'a' in "array" could be an "a" or a "4".
+* The second 'a' in "array" could be an "a" or a "4".
 
 We're left with very few probable variations. Sure enough we find the flag on the second try.
 

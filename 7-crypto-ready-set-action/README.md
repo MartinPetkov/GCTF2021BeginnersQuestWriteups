@@ -21,7 +21,7 @@ Archive:  ready-set-action.zip
 
 Let's look at the files and see what we're dealing with.
 
-These are Python file. The [.pyc](https://docs.python.org/3/glossary.html#term-bytecode) file contains Python bytecode. However, the only thing of note in it is one "REDACTED" value:
+These are Python 3 files. The [.pyc](https://docs.python.org/3/glossary.html#term-bytecode) file contains Python bytecode. However, the only thing of note in it is one "REDACTED" value:
 
 ```sh
 $ hexdump -C __pycache__/chall.cpython-39.pyc
@@ -86,15 +86,15 @@ The formula we have is this:
 c = (flag ^ 3) % n
 ```
 
-Where `c` and `n` are known. 
+Where `c` and `n` are known.
 
-Can we directly reverse this? Raising to a power can be undone with a logarithm, but modulo does not have a direct inverse. By its definition, an infinite amount of numbers could produce the same remainder. Finding the two original primes directly is infeasible, otherwise RSA with 1024 bits wouldn't be cryptographically secure. 
+Can we directly reverse this? Raising to a power can be undone with a logarithm but modulo does not have a direct inverse. By its definition, an infinite amount of numbers could produce the same remainder. Finding the two original primes directly is infeasible, otherwise RSA with 1024 bits wouldn't be cryptographically secure.
 
 It might seem like we're stuck, but it also seems like we know enough values to reverse the flag somehow.
 
-Let's think about it a little bit:
+Let's think about it some more:
 
-* The remainder (`c`) is always going to be some value between 0 and `n`, by the definition of how modulo works.
+* The remainder (`c`) is some value between 0 and `n`, by the definition of how modulo works.
 * The value other than `c` is always going to be some multiple of `n`, again by the definition of how modulo works.
 * That means that flag raised to `e` (`flag ^ 3`) is `<some multiple of n> + c`.
 * And the flag itself is that value at the 3rd root.
@@ -103,7 +103,7 @@ This is enough intuition to start guessing the flag.
 
 ## Solving
 
-We can simply try increasing multiples of `n` and attempt to find the 3rd root of the resulting value. If we find an exact root, we've likely found the flag itself (expressed as `bytes_to_long`, which has an inverse [`long_to_bytes`](https://www.kite.com/python/docs/Crypto.Util.number.long_to_bytes)) but also we should see something like `CTF{` at the beginning. Exact root, because libraries that work with very large numbers will approximate it instead.
+We can simply try increasing multiples of `n`, add `c`, and attempt to find the 3rd root of the resulting value. If we find an exact root, we've likely found the flag itself (expressed as `bytes_to_long`, which has an inverse [`long_to_bytes`](https://www.kite.com/python/docs/Crypto.Util.number.long_to_bytes)) but also we should see something like `CTF{` at the beginning. Exact root, because libraries that work with very large numbers will give approximate roots for any number.
 
 That's exactly what we do in [solve.py](solve.py):
 
