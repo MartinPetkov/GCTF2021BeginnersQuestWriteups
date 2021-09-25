@@ -353,7 +353,7 @@ error: configured execution steps exceeded (2228 steps)
 
 Eh, warnings aren't errors, even 100 thousand of them.
 
-![Warnings aren't errors](warnings_not_errors.png)
+<img src="warnings_not_errors.png" alt="Warnings aren't errors" height="500px"/>
 
 Let's save the value to [chall.from_piet](chall.from_piet) and un-hex it:
 
