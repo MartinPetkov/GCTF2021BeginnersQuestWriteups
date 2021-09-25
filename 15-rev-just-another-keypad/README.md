@@ -18,7 +18,7 @@ Archive:  just-another-keypad.zip
  extracting: keypad.pas
 ```
 
-What is a .pas file? Well, as the story states, this is [Free Pascal](https://wiki.freepascal.org/). I have precisely 0 experience with Free Pascal, so I'm going to attempt to convert it into a Python program instead and hopefully that will make it much easier to understand. Along the way we'll be extra careful to double-check the meaning of all symbols and syntactical elements, just in case they mean something different in this world than elsewhere.
+What is a .pas file? Well, as the story states, this is [Free Pascal](https://wiki.freepascal.org/). I have precisely zero experience with Free Pascal, so I'm going to attempt to convert it into a Python program instead and hopefully that will make it easier to understand. Along the way we'll be extra careful to double-check the meaning of all symbols and syntactical elements, just in case they mean something different in this world than elsewhere.
 
 Let's go through the [keypad.pas](keypad.pas) file top-to-bottom and try to understand what's happening.
 
@@ -64,7 +64,7 @@ End;
 
 This seems to check that each digit in the code is 0-9 then `or` it with certain bits in `x`, which starts off as all 0s.
 
-In Free Pascal, it appears that a [QWord](https://wiki.freepascal.org/QWord) is an unsigned 64-bit integer and [`or`](https://wiki.freepascal.org/Or) is an [overloaded](https://wiki.freepascal.org/Operator_overloading) operator which acts as a [bitwise OR](https://wiki.freepascal.org/Or#bitwise_operation) when operating on ints. [`shl`](https://wiki.freepascal.org/Shl) is a bitwise left shift which fills with 0s.
+In Free Pascal, it appears that a [QWord](https://wiki.freepascal.org/QWord) is an unsigned 64-bit integer and [`or`](https://wiki.freepascal.org/Or) is an [overloaded](https://wiki.freepascal.org/Operator_overloading) operator which acts as a [bitwise OR](https://wiki.freepascal.org/Or#bitwise_operation) when operating on ints. [`shl`](https://wiki.freepascal.org/Shl) is a bitwise **l**eft **sh**ift which fills with 0s.
 
 All in all, this appears to set `x` to the digits in `code` from right to left, since:
 
@@ -80,11 +80,11 @@ x := x xor &1275437152437512431354;
 x := RolQWord(x, 10);
 ```
 
-This first XORs `x` with a value. But the `&` is a subtle gotcha. If you've seen it in other languages, you might think it's an [address operator](https://en.wikipedia.org/wiki/Dereference_operator), but in fact in Free Pascal, [`&` (ampersand) denotes an octal base number](https://wiki.freepascal.org/&).
+This first XORs `x` with a value. But the `&` is a subtle gotcha. If you've seen it in other languages, you might think it's an [address operator](https://en.wikipedia.org/wiki/Dereference_operator) and wonder why it's in front of a static number, but in fact in Free Pascal [`&` (ampersand) denotes an octal base number](https://wiki.freepascal.org/&).
 
 Let's let that sink in for a minute. Close your eyes and let all those instincts from years of programming in C-derived languages gently float out of your head and into the cool breeze.
 
-Now that that's done let's look at [`RolQWord`](https://wiki.freepascal.org/FPC_New_Features_2.6.0#ROL.2FROR_intrinsics). It's kind of hard to research but it seems like it "rotates" to the left, inserting the exiting bits to the "right" side of the number.
+Now that that's done let's look at [`RolQWord`](https://wiki.freepascal.org/FPC_New_Features_2.6.0#ROL.2FROR_intrinsics). It's kind of hard to research but it seems like it "rotates" to the left, inserting the exiting bits to the right side of the number.
 
 ---
 
@@ -95,7 +95,7 @@ c := x and RolQWord(1229782938247303441, 2);
 d := x and RolQWord(&0210421042104210421042, 2);
 ```
 
-Nothing shocking. More <strike>addresses</strike> octal numbers. As with `or`, [`and` is a bitwise operation when used with ints](https://wiki.freepascal.org/Or#bitwise_operation).
+Nothing shocking. More <strike>addresses</strike> octal numbers and rotations. As with `or`, [`and` is a bitwise operation when used with ints](https://wiki.freepascal.org/Or#bitwise_operation).
 
 ---
 
@@ -109,7 +109,7 @@ else
 
 The last few lines are equivalent to a `return`.
 
-But oh boy, now we have dollar signs too. Probably not [variable accessors](https://stackoverflow.com/a/5163260). Instead, [`$` (dollar sign) denotes a hexadecimal base number](https://wiki.freepascal.org/Dollar_sign).
+But oh boy, now we have dollar signs too. Probably not used for [accessing variables](https://stackoverflow.com/a/5163260). Instead, [`$` (dollar sign) denotes a hexadecimal base number](https://wiki.freepascal.org/Dollar_sign).
 
 Cool breeze.
 
@@ -176,8 +176,8 @@ x = ___0___1___0___0___1___0___1___0___0___0___0___1___1___1___1___0
 a = 0000000100000000000100000001000000000000000000010001000100010000  # 0x0100101000011110
 
 
-x = __10__01__00__10__11__10__01__00__10__00__00__11__11__11__11__00  # 0o0210421042104210421042
-&   0010001000100010001000100010001000100010001000100010001000100010
+x = __10__01__00__10__11__10__01__00__10__00__00__11__11__11__11__00
+&   0010001000100010001000100010001000100010001000100010001000100010  # 0o0210421042104210421042
 ------------------------------------------------------------------
 b = 0010000000000010001000100000000000100000000000100010001000100000  # 0x2002220020022220
 

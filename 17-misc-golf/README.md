@@ -38,7 +38,7 @@ $ wc -c ./encoder.py
 
 7210?! We have our work cut out for us.
 
-*Disclaimer: The final result of this writeup is most likely not "optimal". I'm not an expert golfer, but those that are have been known to do truly wacky and wild stuff to achieve those sweet, sweet low byte numbers. Someone on Discord reached enlightenment and somehow brought it down to 133 bytes. If you enjoy this kind of thing, try to minify the solution here even further!*
+*Disclaimer: The final result of this writeup is most likely not "optimal". I'm not an expert golfer, but those that are have been known to do truly wacky and wild stuff to achieve those sweet, sweet low byte numbers. Someone on Discord reached enlightenment and brought it down to 133 bytes. If you enjoy this kind of thing, try to minify the solution here even further!*
 
 ### Foreshadowing: Golf steps that will come last
 
@@ -198,9 +198,9 @@ def encode(input_data_as_byte_stream):
 
 SURELY not all of this is necessary. Let's make some observations:
 
-* `#!/usr/bin/python3` is almost certainly not necessary. This is a [shell directive](https://en.wikipedia.org/wiki/Shebang_(Unix)) and can probably be removed if the file is ran with `python <file>` instead of just `./<file>`.
+* `#!/usr/bin/python3` is almost certainly not necessary. This is a [shell directive](https://en.wikipedia.org/wiki/Shebang_(Unix)) and can probably be removed if the file is ran directly instead of via a shell.
 * `__all__ = ["encode"]` is used in [module importing](https://stackoverflow.com/questions/44834/can-someone-explain-all-in-python) and can probably be removed if the program directly imports the `encode` function by name.
-* `NUMBERS` is just an array of all the primes up to 7919. We can surely generate this instead of having then written out like this.
+* `NUMBERS` is just an array of all the primes up to 7919. We can surely generate this instead of having them all written out like this.
 * The `encode` function must be left as-is and not renamed, judging by the code in `tester.py`.
 
 (Note: The `#END` at the end is actually necessary when sending it to the server and doesn't contribute to the byte count, so let's ignore it)
@@ -208,25 +208,6 @@ SURELY not all of this is necessary. Let's make some observations:
 This already gives us some ideas. Let's pursue those and see how many bytes we can remove.
 
 Let's remove the directives are the top as those are trivial, and then we'll look at more substantial optimizations.
-
-```python
-import struct
-
-NUMBERS = [...]
-
-def make_tlv(type, byte_data):
-  ...
-
-def step1_encode_as_tlv(input_data_as_byte_stream):
-  ...
-
-def step2_encrypt_data(data_to_encrypt):
-  ...
-
-def encode(input_data_as_byte_stream):
-  ...
-#END
-```
 
 Our new size:
 ```sh
@@ -239,7 +220,7 @@ All tests passed!
 
 **Savings:** 47 **Total savings:** 47
 
-### Hole 1: Golf the prime NUMBERS
+## Hole 1: Golf the prime NUMBERS
 
 That `NUMBERS` array is massive, and it can be generated. Now, we can go through the same exercise to golf a small implementation of prime numbers generation, but let's look for one instead, since this is probably a common task in code golf courses.
 
@@ -280,7 +261,7 @@ Wonderful!
 
 **Savings:** 6145 **Total savings:** 6192
 
-### Hole 2: Golf the lists
+## Hole 2: Golf the lists
 
 Next, let's look at some of the functions.
 
@@ -309,7 +290,7 @@ def step2_encrypt_data(data_to_encrypt):
   return bytes(bytearray(output))
 ```
 
-We see in two places one line to define the `output` list and several lines to populate it. We also see a for-loop populating a list, which can be converted to a list comprehension.
+We see in two places one line to define the `output` list and several lines to populate it. These can done all at once. We also see a for-loop populating a list, which can be converted to a list comprehension.
 
 ```python
 def make_tlv(type, byte_data):
@@ -347,7 +328,7 @@ Great!
 
 **Savings:** 200 **Total savings:** 6392
 
-### Hole 3: Combine function calls
+## Hole 3: Combine function calls
 
 It's beginning to get a bit harder to find optimizations. But we can combine the two function calls in `encode`:
 
@@ -383,7 +364,7 @@ All tests passed!
 
 **Savings:** 279 **Total savings:** 6671
 
-### Hole 4: Golf the bytes
+## Hole 4: Golf the bytes
 
 It's definitely getting less obvious what to optimize now. But let's focus for a bit on the remaining function, `make_tlv`.
 
@@ -435,7 +416,7 @@ All tests passed!
 
 **Savings:** 59 **Total savings:** 6730
 
-### Hole 5: Zip and XOR
+## Hole 5: Zip and XOR
 
 What now? There's isn't all that much left to look at or optimize.
 
@@ -443,7 +424,6 @@ Well, one small thing we can do is use Python's [`zip`](https://docs.python.org/
 
 ```python
 
-```python
 NUMBERS = [n for n in range(2,8000) if all(n%i for i in range(2,n))]
 
 def make_tlv(type, byte_data):
@@ -470,7 +450,7 @@ All tests passed!
 
 **Savings:** 36 **Total savings:** 6766
 
-### Hole 6: Inline make_tlv
+## Hole 6: Inline make_tlv
 
 We're getting pretty desperate now.
 
@@ -502,7 +482,7 @@ All tests passed!
 
 **Savings:** 94 **Total savings:** 6860
 
-### Hole 7: Add the data bytes
+## Hole 7: Add the data bytes
 
 Similar to before, let's change the `b''.join([...])` to plain byte addition.
 
@@ -528,7 +508,7 @@ All tests passed!
 
 **Savings:** 26 **Total savings:** 6886
 
-### Hole 8: Deduplicate
+## Hole 8: Deduplicate
 
 We're getting close. As a reminder, our target was 235 bytes of space. Maybe the steps we put off till now will get us there, but let's do one more optimization.
 
@@ -557,7 +537,7 @@ Didn't help too much.
 
 **Savings:** 5 **Total savings:** 6891
 
-### Hole 9: Uglify
+## Hole 9: Uglify
 
 It's time to reach our final form.
 

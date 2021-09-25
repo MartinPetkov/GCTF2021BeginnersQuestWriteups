@@ -31,7 +31,7 @@ vm-cli/Cargo.lock
 vm-cli/.gitignore
 ```
 
-First, the [`.rom`](https://fileinfo.com/extension/rom) file. What is this? According to the link from a quick Google search, it's extracted memory from a hardware read-only memory chip. Trying to fingerprint it doesn't help:
+First, the [`.rom`](https://fileinfo.com/extension/rom) file. What is this? According to the link from a quick Google search, it's extracted memory from a hardware **r**ead-**o**nly **m**emory chip. Trying to fingerprint it doesn't help:
 
 ```sh
 $ file vm.rom
@@ -202,6 +202,8 @@ BRBuK[
 
 Alas, not quite, at least not as-is. Let's remember it for later though.
 
+---
+
 ```rust
 struct Vm {
     f: std::fs::File,
@@ -213,6 +215,8 @@ struct Vm {
 ```
 
 So the VM has a file (the `vm.rom`), 256 registers, 64 KB of stack space, a `flag` bool, and a stack pointer (`sp`).
+
+---
 
 ```rust
 impl Vm {
@@ -245,6 +249,8 @@ This is useful. Comments left behind in the source show us how to debug the VM b
 If you uncomment this and try running the `vm.rom` file, the output is massive and there are no immediately obvious patterns. One thing that is useful though is printing out the instructions without running them; this can be done by uncommenting part of this and returning early (before the next section). See the file [rom_instructions.txt](rom_instructions.txt) for an instruction dump.
 
 Moving on.
+
+---
 
 ```rust
 use Instruction::*;

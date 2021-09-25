@@ -22,7 +22,9 @@ These are some of the tools used throughout the writeups:
 
 * [`bash`](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) - A popular [Unix shell](https://en.wikipedia.org/wiki/Unix_shell) that comes with most modern Linux distros. Used in the majority of challenges, since only a few are web-only.
 * [`file`](https://linux.die.net/man/1/file) - An extremely helpful utility which attempts to identify the type of a file. It's important to remember that in Linux, [file extensions](https://en.wikipedia.org/wiki/Filename_extension) have no inherent relation to the file type; that's entirely determined by data in the file and how it's parsed.
+* [`tar`](https://www.gnu.org/software/tar/)/[`unzip`](https://linux.die.net/man/1/unzip) - Utilities for working with archives.
 * [`curl`](https://en.wikipedia.org/wiki/CURL) - A command line utility for requesting URLs. Allows interacting with and automating challenges on the web.
+* [`wget`](https://www.gnu.org/software/wget/) - Another utility for downloading files from URLs. More convenient to use in some ways.
 * [`hexdump`](https://linux.die.net/man/1/hexdump) - A utility for dumping the bytes from a file in [hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) format.
 * [`xxd`](https://linux.die.net/man/1/xxd) - Another utility for parsing and dealing with hex data.
 * [`wc`](https://linux.die.net/man/1/wc) - A utility that counts bytes, characters, words or lines.

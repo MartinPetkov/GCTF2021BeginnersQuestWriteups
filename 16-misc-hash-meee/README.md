@@ -11,7 +11,7 @@ Category: `misc`
 
 This challenge comes with...nothing. Just the instructions.
 
-We are asked to produce 2 different strings, both starting with `gctf`, that have the same [MD5](https://en.wikipedia.org/wiki/MD5) hashes. A [hash function](https://en.wikipedia.org/wiki/Hash_function) maps data to a fixed size value and a "hash" is the output of applying that function on some data (i.e. our two strings), but in the context of computer security "hashing" almost invariably refers to [cryptographic hashing](https://en.wikipedia.org/wiki/Cryptographic_hash_function). Given that, this challenge seems impossible when considering one of the properties of a hash function:
+We are asked to produce 2 different strings, both starting with `gctf`, that have the same [MD5](https://en.wikipedia.org/wiki/MD5) hashes. A [hash function](https://en.wikipedia.org/wiki/Hash_function) maps data to a fixed size value and a "hash" is the output of applying that function to some data (i.e. our two strings), but in the context of computer security "hashing" almost invariably refers to [cryptographic hashing](https://en.wikipedia.org/wiki/Cryptographic_hash_function). Given that, this challenge seems impossible when considering one of the properties of a hash function:
 
 ```
 * It is infeasible to find two different messages with the same hash value
@@ -19,14 +19,14 @@ We are asked to produce 2 different strings, both starting with `gctf`, that hav
 
 Or is it?
 
-"Hashing" on its own is abstract and must be implemented as a real algorithm in order to be useful. There appear to be [many cryptographic hash algorithms](https://en.wikipedia.org/wiki/Cryptographic_hash_function#Cryptographic_hash_algorithms) out there, but why is that? Well, looking at the [comparison](https://en.wikipedia.org/wiki/Comparison_of_cryptographic_hash_functions) and the [security summary](https://en.wikipedia.org/wiki/Hash_function_security_summary) (all linked directly from the earlier Wikipedia page), we can clearly see that some are more "secure" than others. Some algorithms implement the required properties really well, and others do so poorly (by today's standards; hash functions historically been considered safe but then been "broken" after enough time and research focus; it's reasonable to assume all of today's "secure" hash algorithms may eventually be broken).
+"Hashing" on its own is abstract and must be implemented as a real algorithm in order to be useful. There appear to be [many cryptographic hash algorithms](https://en.wikipedia.org/wiki/Cryptographic_hash_function#Cryptographic_hash_algorithms) out there, but why is that? Well, looking at the [comparison](https://en.wikipedia.org/wiki/Comparison_of_cryptographic_hash_functions) and the [security summary](https://en.wikipedia.org/wiki/Hash_function_security_summary) (all linked directly from the earlier Wikipedia page), we can clearly see that some are more "secure" than others. Some algorithms implement the required properties really well, and others do so poorly (by today's standards; hash functions have historically been considered safe for a time then been "broken" after enough research focus; it's reasonable to assume all of today's "secure" hash algorithms may eventually be broken).
 
-A common pattern in each of these pages is that MD5 is a at the bottom of the list and considered hopelessly insecure. Some choice quotes:
+A common pattern in each of these pages is that MD5 is at the bottom of the list and is considered hopelessly insecure. Some choice quotes:
 
 * "This attack takes seconds on a regular PC."
 * "Collisions against MD5 can be calculated within seconds which makes the algorithm unsuitable for most use cases where a cryptographic hash is required."
 
-It seems the goal of this challenge really is to make you aware of this fact, and to have you experience it for yourself. Let's do some research and reproduce these results.
+It seems the goal of this challenge really is to make you aware of this fact, and to have you experience it for yourself. Let's do some more research and reproduce these results.
 
 ### Generating chosen-prefix MD5 collisions
 
