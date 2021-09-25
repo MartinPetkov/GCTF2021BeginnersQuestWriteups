@@ -410,6 +410,23 @@ So what happened at the letter "A"? The pattern held up until that point, then w
 
 Well the negative number should be a clue. Remember how earlier we noted that the `Print` instruction casts to a `u8`? Well, it casts to `u8` from a [`usize`](https://doc.rust-lang.org/std/primitive.usize.html), which can be 32 bits or 64 bits but certainly more than 8 bits. What is likely happening here then is that the value in the registers is increasing as expected, but its overflowing during the 8-bit cast (222 + 99 > 256). Therefore, likely the pattern keeps holding, but to get the real value we need to modulo by 256.
 
+| Flag | Ord + Diff with Modulo | INPUT_DATA | Ord - INPUT_DATA | Difference Pattern |
+| -----|-----|------------|------------------|--------------------|
+| C | (67 % 256) = 67 | 66 | 1 | N/A |
+| T | (84 % 256) = 84 | 82 | 2 | N/A |
+| F | ((66 + 4) % 256) = 70 | 66 | 4 | (2 + 1) + 1 = 4 |
+| { | ((117 + 6) % 256) = 123 | 117 | 6 | (4 + 2) + 0 = 6 |
+| T | ((75 + 9) % 256) = 84 | 75 | 9 | (6 + 4) - 1 = 9 |
+| h | ((91 + 13) % 256) = 104 | 91 | 13 | (9 + 6) - 2 = 13 |
+| i | ((86 + 19) % 256) = 105 | 86 | 19 | (13 + 9) - 3 = 19 |
+| s | ((87 + 28) % 256) = 115 | 87 | 28 | (19 + 13) - 4 = 28 |
+| I | ((31 + 42) % 256) = 73 | 31 | 42 | (28 + 19) - 5 = 42 |
+| s | ((51 + 64) % 256) = 115 | 51 | 64 | (42 + 28) - 6 = 64 |
+| A | ((222 + 99) % 256) = 65 | 222 | -157 | (64 + 42) - 7 = 99 |
+| V | ((187 + 155) % 256) = 86 | 187 | -101 | (99 + 64) - 8 = 155 |
+| e | ((112 + 245) % 256) = 101 | 112 | -11 | (155 + 99) - 9 = 245 |
+| r | ((236 + 390) % 256) = 114 | 236 | -122 | (245 + 155) - 10 = 390 |
+
 ### Re-implementing vm.rom
 
 With all this in mind, to implement the pattern would look roughly like this:
