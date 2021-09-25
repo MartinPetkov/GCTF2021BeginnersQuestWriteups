@@ -345,9 +345,11 @@ This is kind of a lot, but all it really is, is the implementations for each ins
 
 I can't see any modification of `INPUT_DATA` here, so it must be happening in the ROM. It's likely calling `CharAt`, doing something to it, then calling `Print` and that's what we see on the screen.
 
+---
+
 ### Reversing the flag
 
-At this point, the natural thing would be to start analyzing the ROM instructions and figuring out what they do. There are no binary analysis tools for a custom VM, so you would have to do that by squinting at the instructions and trying to make sense of them.
+At this point, the natural thing to do would be to start analyzing the ROM instructions and figuring out what they do. There are no binary analysis tools for a custom VM, so you would have to do that by squinting at the instructions and trying to make sense of them.
 
 But I couldn't shake the feeling that `INPUT_DATA` is the flag. It just make sense, and it's also very long, as we would expect.
 
@@ -387,7 +389,7 @@ Let's compare the [ordinal values](https://en.wikipedia.org/wiki/Ordinal_data_ty
 | o | 111 | 225 | -114 |
 | u | 117 | 164 | -47 |
 
-I mapped out the differences then tried to find a pattern. Initially I thought the difference was the [Fibonnaci Sequence](https://en.wikipedia.org/wiki/Fibonacci_number), but that almost immediately fell apart. Or, it ALMOST did. See below.
+I mapped out the differences then tried to find a pattern. Initially I thought it was the [Fibonnaci Sequence](https://en.wikipedia.org/wiki/Fibonacci_number), but that almost immediately fell apart. Or, it ALMOST did. See below.
 
 | Flag | Ord | INPUT_DATA | Ord - INPUT_DATA | Difference Pattern |
 | -----|-----|------------|------------------|--------------------|
@@ -406,7 +408,7 @@ I mapped out the differences then tried to find a pattern. Initially I thought t
 | e | 101 | 112 | -11 | ? |
 | r | 114 | 236 | -122 | ? |
 
-So what happened at the letter "A"? The pattern held up until that point, then went silly.
+What happened at the letter "A"? The pattern held up until that point, then went silly.
 
 Well the negative number should be a clue. Remember how earlier we noted that the `Print` instruction casts to a `u8`? Well, it casts to `u8` from a [`usize`](https://doc.rust-lang.org/std/primitive.usize.html), which can be 32 bits or 64 bits but certainly more than 8 bits. What is likely happening here then is that the value in the registers is increasing as expected, but its overflowing during the 8-bit cast (222 + 99 > 256). Therefore, likely the pattern keeps holding, but to get the real value we need to modulo by 256.
 
