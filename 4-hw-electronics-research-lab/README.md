@@ -38,11 +38,13 @@ I'm not familiar with how bootloaders work, but from reading through a few of th
 
 What about the editors? Well unfortunately trying all 4 just gives me variations on "Sorry, we could not recognize this file".
 
-There's also the [library](https://www.npmjs.com/package/uf2). Maybe this could be made to work, but it appears to work on a block level, meaning I need to figure out how to parse and "run" each block without actually running on hardware. I felt like there must be an easier way.
+There's also the [library](https://www.npmjs.com/package/uf2). Maybe this could be made to work, but it appears to work on a block level, meaning I need to figure out how to parse and "run" each block without actually running on hardware.
+
+There must be an easier way.
 
 ### Understanding the program
 
-Okay, so maybe we don't need to run the uf2 file after all. Let's try another way.
+Maybe we don't need to run the uf2 file after all. Let's try another way.
 
 What is the `chal.c` file actually doing?
 
@@ -79,17 +81,17 @@ int main(void)
 Let's try to understand each of these functions:
 
 * [`gpio_init`](https://raspberrypi.github.io/pico-sdk-doxygen/group__hardware__gpio.html#ga8aa4741d93dc40bc728dbd3e41813ad1) initializes the [GPIO pins](https://projects.raspberrypi.org/en/projects/physical-computing/1).
-* [`gpio_set_dir`](https://raspberrypi.github.io/pico-sdk-doxygen/group__hardware__gpio.html#ga6a40edf0d86f6b3f0dcb51a768cf4681) sets the GPIO "direction". I wasn't familiar with this term but since the argument is `GPIO_OUT`, I assume this means drive the signal out, not in.
+* [`gpio_set_dir`](https://raspberrypi.github.io/pico-sdk-doxygen/group__hardware__gpio.html#ga6a40edf0d86f6b3f0dcb51a768cf4681) sets the GPIO "direction". I wasn't familiar with this term but since the argument is `GPIO_OUT`, I assume this means drive the signal out, not in (that is, set the pins, don't "read from" the pins).
 * [`gpio_put_all`](https://raspberrypi.github.io/pico-sdk-doxygen/group__hardware__gpio.html#ga7aa41e10d04a8d99d9a8c4d7ba5007b8) drives all pins, in this case to 0.
-* [`gpio_set_mask`](https://raspberrypi.github.io/pico-sdk-doxygen/group__hardware__gpio.html#gaf3aa12aa4543965e24f52cfa9b529904) drives high every GPIO in the mask, as a bitmask. I interpret that to mean that `67`, which is `01000011` in binary, drives pins 1, 6 and 7.
+* [`gpio_set_mask`](https://raspberrypi.github.io/pico-sdk-doxygen/group__hardware__gpio.html#gaf3aa12aa4543965e24f52cfa9b529904) drives high every GPIO in the bitmask. I interpret that to mean that `67`, which is `01000011` in binary, drives pins 1, 6 and 7.
 * [`gpio_clr_mask`](https://raspberrypi.github.io/pico-sdk-doxygen/group__hardware__gpio.html#ga6aca495d644a6ae66050a99ef44defbe) drives low every GPIO in the bitmask. Same as `gpio_set_mask`, but setting pins low, not high.
-* `sleep_us`/`sleep_ms` probably just sleeps for the specified microseconds or milliseconds.
+* `sleep_us`/`sleep_ms` just sleeps for the specified microseconds or milliseconds.
 
 Okay, now we're getting somewhere! This program is driving groups of pins.
 
-One highly suspicious thing here is the pattern. There is always one `gpio_set_mask`, one `gpio_clr_mask`, and one `sleep`. Here I had the intuition that each of these groups is trying to communicate a character to us in bit form. At the top, only 8 GPIOs are initialized, and all of the arguments are <= 2^8.
+One highly suspicious thing here is the pattern. There is always one `gpio_set_mask`, one `gpio_clr_mask`, and one `sleep`. Here I had the intuition that each of these groups is trying to communicate a character to us in bit form. At the top, only 8 GPIOs are initialized, and all of the arguments are <= 2^8 so they fit in 8 bits.
 
-Let's try to confirm this intuition. We know that in this CTF, flags always start with `CTF{`, and nothing in this challenge has indicated otherwise. Let's try to decode the first 3 blocks (applying the masks in order):
+Let's try to confirm this intuition. We know that in this CTF, flags start with `CTF{` unless told otherwise, and nothing in the description indicates otherwise. Let's try to decode the first 3 blocks (applying the masks in order):
 
 ```
                     // pins               =  00000000
@@ -112,7 +114,7 @@ We don't want to do this all by hand, there are way too many lines. And we're co
 
 My go-to for CTFs is Python, as it's ergonomic and very easy to write quick and simple scripts in.
 
-If you look closely at the operations, you may realize that `gpio_set_mask` is just a bitwise OR and `gpio_clr_mask` is just a bitwise NAND. Python supports [bitwise operations](https://www.geeksforgeeks.org/python-bitwise-operators/), so let's use a plain int for the "pins".
+If you look closely at the operations, you may realize that `gpio_set_mask` is just a bitwise OR and `gpio_clr_mask` is just a bitwise NAND. Python supports [bitwise operations](https://www.geeksforgeeks.org/python-bitwise-operators/) on ints, so let's use a plain int for the "pins".
 
 As usual I went for the simplest solution. I copied the pin-setting lines to a Python program, used a global variable for the pins, and defined functions with the same names which modify the pins. Sleep just outputs the character. It looks like this:
 
@@ -130,7 +132,7 @@ def gpio_clr_mask(mask):
 def sleep_us(n):
   global gpios
   print(chr(gpios), end="")
-  
+
 # The C code from chal.c
 gpio_set_mask(67);
 gpio_clr_mask(0);
@@ -144,7 +146,7 @@ sleep_us(100);
 ...
 ```
 
-See the full file in [pico.py](pico.py).
+See the full file in [solve.py](solve.py).
 
 Running this happily produces the flag:
 

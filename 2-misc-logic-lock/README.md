@@ -17,15 +17,13 @@ Archive:  logic-lock.zip
  extracting: logic-lock.png
 ```
 
-(the file is included in the repo in case the link ever goes down)
-
 Let's look at the image:
 
 ![Logic gates](logic-lock.png)
 
 It's a set of [logic gates](https://en.wikipedia.org/wiki/Logic_gate) with the inputs labeled with the letters A-J. At the bottom it says that the flag is the inputs that need to be set, sorted and enclosed in `CTF{}`.
 
-As usual, I'm going to go with the simplest solution and use https://logic.ly/ to build the circuit and play with the inputs. There are certainly other ways to solve this.
+As usual, I'm going to go with the simplest solution and use [logic.ly](https://logic.ly/) to build the circuit and play with the inputs. There are certainly other ways to solve this.
 
 This is what the circuit looks like like:
 

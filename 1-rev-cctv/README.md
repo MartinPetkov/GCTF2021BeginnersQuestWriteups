@@ -13,7 +13,7 @@ This challenge starts off by pointing you to `https://cctv-web.2021.ctfcompetiti
 
 ![CCTV Login Page](login_page.png)
 
-My first thought was to test for SQL Injection or XSS, but I realized that's jumping too far ahead and I went to explore the elements of the page, like the HTML and JavaScript.
+My first thought was to test for SQL Injection or XSS, but that's jumping a bit too far ahead. Let's first explore the elements of the page, like the HTML and JavaScript.
 
 I'm using Chrome, so I opened the Dev Tools panel. There's no JavaScript included, at least not as a separate file. The HTML is pretty unsurprising, it's just a login form with some basic CSS. However, at the bottom is this JavaScript block:
 
@@ -58,9 +58,9 @@ I don't see any API calls being made at all. It registers a listener which will 
 
 None of the modifications are irreversible:
 
-* [`Array.from()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from) simply turns a string into an array of characters.
+* [`Array.from()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from) simply turns a string into an array of characters. Its inverse is [`Array.join()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/join).
 * `0xCafe +` adds a static value, which can be subtracted.
-* [`String.prototype.charCodeAt()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/charCodeAt) has the complementary function [`String.fromCharCode()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/fromCharCode), found in the "See also" section.
+* [`String.charCodeAt()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/charCodeAt) has the complementary function [`String.fromCharCode()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/fromCharCode), found in the "See also" section.
 * The lines in the if statement check characters out of order but this can be corrected.
 
 I went with the simplest solution and manually ran the following JavaScript in the Dev Tools console:

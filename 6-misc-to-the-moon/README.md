@@ -4,7 +4,7 @@ Category: `misc`
 
 ## Story
 
->You’re exiting a crowded subway nearby the office that you are about to visit. You are showing the guards your ID and answering a couple of routine questions. They are not impressed, but the gate opens up and you can enter the area despite their doubt. You are not allowed to stroll freely on the company grounds, but are shown around by a woman that stares at you with a crooked smile. At last you're able to talk to the manager, a short man with a white robe and shades: "Greetings, AGENT, You must be thirsty after your long journey? No? You don’t mind if I’ll have something for myself, do you? Good! We have heard about the device that you possess, can I have a look at it. Hmm, it seems that it is encrypted. Help me break this quickly so that we can continue with the analysis."<br/><br/>
+>You’re exiting a crowded subway near the office that you are about to visit. You are showing the guards your ID and answering a couple of routine questions. They are not impressed, but the gate opens up and you can enter the area despite their doubt. You are not allowed to stroll freely on the company grounds, but are shown around by a woman that stares at you with a crooked smile. At last you're able to talk to the manager, a short man with a white robe and shades: "Greetings, AGENT, You must be thirsty after your long journey? No? You don’t mind if I’ll have something for myself, do you? Good! We have heard about the device that you possess, can I have a look at it. Hmm, it seems that it is encrypted. Help me break this quickly so that we can continue with the analysis."<br/><br/>
 >This one is a doozie. We found this weird file on a memory stick with a post-it note on it. It looks like someone was working on a very obscure encryption system. Maybe we can decode it?
 
 ## Solution
@@ -13,9 +13,9 @@ Category: `misc`
 
 OH BOY they did not lie here. This was easily the most convoluted and guessy challenge of the entire CTF.
 
-I personally helped 10x as many people through this one specific challenge as I did for any other. I suspect if anyone found this repo, it was to see this writeup here.
+I personally helped 3x as many people through this one specific <strike>struggle</strike> challenge as I did for any other. I suspect if anyone finds this repo, it's to see this writeup here.
 
-I'll give intuition where I can, but honestly I had several people help me and give me crucial nudges when I got stuck, so some of the steps will be "well you just have to guess right and have that flash of insight ¯\\\_(ツ)_/¯"
+I'll give intuition where I can, but honestly I had several people help me and give me crucial nudges when I got stuck, so some of the steps will be "well you just have to guess right and have that flash of insight ¯\\\_(ツ)\_/¯"
 
 Let's begin the adventure.
 
@@ -33,7 +33,7 @@ Archive:  to-the-moon.zip
 
 Let's look at the files and see what we're dealing with.
 
-First, the encodings:
+First, the [encodings](encodings):
 
 ```
 I made a super secret encoder. I remember using:
@@ -47,12 +47,11 @@ I made a super secret encoder. I remember using:
 I also use gzip and zlib (to compress the stuff) and I like hiding things in files...
 ```
 
-Okay then. So the file `chall.txt` likely has to be transformed through each of these encodings before giving us the flag. Makes sense so far.
+Okay then. So the file `chall.txt` likely has to be transformed through each of these encodings before giving us the flag. Makes sense so far, though it's worrying how many encondings there are.
 
 The encodings keep talking about various odd languages so it's safe assume these aren't going to be ordinary languages but [esolangs](https://esolangs.org/).
 
-Let's do a bit of research on what each of these could mean. From now on, we'll keep running track of which encodings we've used, as presumably each is only used once.
-
+Let's do a bit of research on what each of these could be referring to.
 
 * [ ] A weird base, much higher than base64 **(base128? base1024? higher?)**
 * [ ] A language named after a painter **(probably [Piet](https://esolangs.org/wiki/Piet), first result from "esolang painter")**
@@ -64,6 +63,8 @@ Let's do a bit of research on what each of these could mean. From now on, we'll 
 * [ ] Data hidden in a file
 
 Okay, so maybe research wasn't so helpful here. But we have at least a few pointers, so let's get started. Maybe the data will give more clues.
+
+From now on, we'll keep running track of which encodings we've used, as presumably each is only used once.
 
 ## Step 1: Starting File
 
@@ -91,9 +92,9 @@ Wonderful.
 
 Let's ignore the Chinese characters then. That's probably my poor undeserving shell's best attempt at parsing the bytes.
 
-So which of the other encodings is it? It's naive to assume they're given in order, but honestly a high base encoding might make sense here.
+So which of the other encodings is it? It's naive to assume they're given in order, but honestly a high base encoding might make sense here. Most esolangs have immediately obvious syntax.
 
-Let's try a few bases in [CyberChef](https://gchq.github.io/CyberChef/) (a wonderful tool, especially for CTFs). Unfortunately, it only goes as high as base85, and that gives this error:
+Let's try a few bases in [CyberChef](https://gchq.github.io/CyberChef/) (a wonderful tool, especially for CTFs). Unfortunately, it only goes as high as base85, and that gives an error:
 
 ```
 From Base85 - Invalid character '魦' at index 0
@@ -113,7 +114,7 @@ But wait! What's this?
 
 ![Ultra mega high encoding](high_encoding.png)
 
-65536?! I've never even suspected an encoding with this many bits exist but why not, let's try it.
+65536?! I've never even suspected an encoding with this many bits exists, but why not, let's try it.
 
 There is the [linked library](https://github.com/qntm/base65536), of course, (which I did in fact use in [decode.js](decode.js)), but Googling "base65536 decoder" also turns up the [BetterConverter Base65536 Decode Online Tool](https://www.better-converter.com/Encoders-Decoders/Base65536-Decode). Let's try it.
 
@@ -163,7 +164,7 @@ Wait a second, what's this in the clues...
 I like hiding things in files...
 ```
 
-Do you now? This is an image, and images have metadata. It's common in CTFs to put interesting info there. Surely not...
+Do you now? This is an image, and images have metadata. It's common in CTFs to put interesting info there...
 
 ```
 $ exiftool chall.base65536_decoded.png
@@ -187,7 +188,7 @@ Artist                          : zaeeaeeuewawaweeeuuwaawuwueeuwaawuwaaawuuuuwuw
 ...
 ```
 
-Well now! This looks like what we're actually looking for. It goes on for many many lines and clearly has a pattern, consisting only of the letters `zaeuw`. Let's take another break.
+Well now! This looks like what we're actually looking for. It goes on for many many lines and clearly has a pattern, consisting only of the letters `zaeuw`. Let's copy that data out and take another break.
 
 **The file is [chall.from_artist](chall.from_artist)**
 
@@ -217,13 +218,13 @@ Well, the least we can do is the process of elimination. Let's look through the 
 * It's not Brainfuck. I know what that looks like and it's all symbols, not letters.
 * It's probably not the -ary language. This is a stretch but I would assume it's something like binary, trinary, quarternary, etc. and it would be based on the number of bits, but this has a clear character set.
 
-So let's close our eyes, spin around for 30s and go where we point. Let's try to find the "opposite of good" language.
+So let's close our eyes, spin around for 30s and go where we point (that is, guess hard). Let's try to find the "opposite of good" language.
 
-I have to admit I spun wheels here for hours. There are so many possible avenues to explore and I just could not think of a different antonym that made sense. [Googling it](https://www.wordhippo.com/what-is/the-opposite-of/good.html) leads me to "wicked", "disadvantaged", "terrible", and all other sorts of words. It wasn't until a former sufferer nudged me with the following: "The forces of good and ... ?"
+I have to admit I spun my wheels here for hours. There are so many possible avenues to explore and I just could not think of a different antonym that made sense. [Googling it](https://www.wordhippo.com/what-is/the-opposite-of/good.html) led me to "wicked", "cruel", "disadvantaged", "terrible", and all other sorts of naughty words. It wasn't until a fellow sufferer nudged me with the following: "The forces of good and ... ?"
 
-[Evil](https://esolangs.org/wiki/Evil)! It fits. All the letters we see are commands in this language. Let's try it.
+[Evil](https://esolangs.org/wiki/Evil)! It fits. All the letters we see are commands in this obscure language. Let's try it.
 
-But how? We could write our own interpreter based on the wiki, but I have to believe someone has done it already. The challenge author wouldn't be so cruel as to make us have to successfully implement an obscure esolang.
+But how? We could write our own interpreter based on the wiki, but I have to believe someone has done it already. The challenge author wouldn't be so cruel as to make us have to correctly implement an obscure esolang.
 
 At the bottom of the wiki are several links, one of them to the [evil homepage on the Wayback Machine](http://web.archive.org/web/20070103000858/www1.pacific.edu/~twrensch/evil/index.html). This actually has a [Java implementation](http://web.archive.org/web/20070906133127/http://www1.pacific.edu/~twrensch/evil/evil.java) which you can run (albeit with an older JDK) and it will succeed.
 
@@ -316,7 +317,7 @@ This looks like something else. Let's save our progress.
 
 ## Step 5: The evil image
 
-[Netpbm](https://en.wikipedia.org/wiki/Netpbm) is an set of graphics programs, it seems. They take PPM, PGM or PBM image formats.
+[Netpbm](https://en.wikipedia.org/wiki/Netpbm) is a set of graphics programs, it seems. They take PPM, PGM or PBM image formats.
 
 Why does this sound so familiar...
 
@@ -350,7 +351,11 @@ warning: 100 thousand warnings shown - stopping this...
 error: configured execution steps exceeded (2228 steps)
 ```
 
-Eh, warnings aren't errors, even 100 thousand of them. Let's save the value to [chall.from_piet](chall.from_piet) and un-hex it:
+Eh, warnings aren't errors, even 100 thousand of them.
+
+![Warnings aren't errors](warnings_not_errors.png)
+
+Let's save the value to [chall.from_piet](chall.from_piet) and un-hex it:
 
 ```sh
 $ xxd -r -p chall.from_piet chall.from_piet_decoded
@@ -415,7 +420,7 @@ Looking at our remaining clues, there's only one thing it could be: Rainbow Cat.
 
 I initially Googled "esolang nyan" but I soon realized (after discussing with others on Discord) that this language never has the final "n", it's only ever "nya" and "~". Googling "esolang nya" lands us on [`nya~`](https://esolangs.org/wiki/Nya~).
 
-Naturally probably practically no one has heard of this language. There's an implementation at the bottom, but I took another look at the (very small number of) commands and realized something.
+I'd wager practically no one has heard of this language. There's an implementation at the bottom, but I took another look at the (very small number of) commands and realized something.
 
 Every line is just one `n`, a bunch of `y`s, and a command to output a char. That boils down to counting the `y`s - 1 and converting that to chr. Let's do it:
 
@@ -448,7 +453,7 @@ What are we even looking at here? It's plain text, but it's all numbers. It does
 
 There are precious few clues left. This is clearly not Brainfuck, so let's focus on the last remaining clue - the "-ary" language.
 
-The [esolangs Language List](https://esolangs.org/wiki/Language_list) gives us 15 results. Sigh. Let's explore:
+The [esolangs Language List](https://esolangs.org/wiki/Language_list) gives us 8 results. Sigh. Let's explore:
 
 * Almost Binary - Just seems like a nicer binary.
 * Binary - Maybe, but the commands are only binary 0-3 and our file doesn't match.
@@ -459,7 +464,7 @@ The [esolangs Language List](https://esolangs.org/wiki/Language_list) gives us 1
 * Unary Filesystem - An OS, not a language.
 * Your Minsky May Vary - Uses totally different notation, not just numbers.
 
-(I later discovered this page is nowhere near complete, and the actual intended language isn't on it)
+*Note: I later discovered this page is nowhere near complete, and the actual intended language isn't on it)*
 
 ### Despair
 
@@ -491,7 +496,7 @@ This is a mapping of 3 bits to Brainfuck commands. That coincides with my observ
 
 ### Is this loss?
 
-I think we've got it here. Let's convert it to Brainfuck and try it. I wrote a short Python script:
+I think we've got it. Let's convert it to Brainfuck:
 
 ```python
 num = int(open('chall.from_nyan').read().strip())
@@ -513,13 +518,13 @@ for command in commands:
   print(bf, end='')
 ```
 
-```
+```sh
 $ python to_brainfuck.py >chall.brainfuck
 $ cat chall.brainfuck
 ]<].-<].,<<<<<-><<<<<<<<<<>,].<<<<<<<+>,-><<<<<<<<<<>,].<<<<<<<+>,-><,,,,,,,,,.,].<,,,[>,<<<<-><<<<<<<<<<>,].<<<+>,-><,,,,,,,,,.,].<[>]><,,,,,,,,,.,].<,,,[>,<<<<-><,,,,,,,,,.,].<,,,,,,[>]><<<<<<<<<<>,].<+>,<<<<<-><<<<<<<<<<>,].<<<+>,<<<<<-><,,,,,,,,,.,].<,,,[>,<<<-><<<<<<<<<<>,].<<<<+>,-><<<<<<<<<<>,].<<<<<+>,<<<<<-><,,,,,,,,,.,].<,[>,<<<-><<<<<<<<<<>,].<<<<<<<+>,-><<<<<<<<<<>,].<<<<+>,<<<<<-><,,,,,,,,,.,].<[>]><<<<<<<<<<>,].<<<<+>,<<<<<-><<<<<<<<<<>,].<<+>,-><<<<<<<<<<>,].<+>
 ```
 
-Let's run it in [copy.sh/brainfuck/](https://copy.sh/brainfuck):
+And let's run it in [copy.sh/brainfuck](https://copy.sh/brainfuck):
 
 ```
 Syntax error: Unexpected closing bracket in line 1 char 0.
