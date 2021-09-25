@@ -29,7 +29,6 @@ This seems pretty straightforward. It says it's a 5-digit code and there are 5 b
 # Generate permutations.
 permutations=($(python -c 'from itertools import permutations; print("\n".join(["".join(perm) for perm in permutations("35780")]))'))
 
-
 # Try them out.
 for perm in ${permutations[@]}; do
   echo -n "Checking ${perm}... "

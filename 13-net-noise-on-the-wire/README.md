@@ -5,7 +5,7 @@ Category: `net`
 ## Story
 
 >That was close! The armed guard didn’t notice you. The floor shakes, the boat is leaving the harbor. You are trying to stay hidden. You see two guards coming your way, you sneak into a small scrubber, they pass it, but then one of the guards takes out his phone and says “OK Google” and your phone suddenly makes a noise: PLING! The guards heard it: Guard 1: "Did you hear that?" Guard 2: "It must have come from the scrubber" Guard 1: "Let's have a look!" The guards close in, you are trapped! Suddenly a bell rings in the distance, and a voice talks through speakers: "Every man to their positions, the ship is about to debark, I repeat, every man to their positions." The guards change their course and head for their positions. Pheww, that was close! You find a better place to hide and settle in for the journey. Then you notice an Ethernet socket in the wall. Might as well sniff some traffic while you're here.<br/><br/>
->You connect your laptop to the Ethernet socket and start wireshark. It takes a while before something interesting pops up - perhaps the crew as busy with whatever is that they normally do. You look through the packets, and hey, these look pretty interesting...
+>You connect your laptop to the Ethernet socket and start wireshark. It takes a while before something interesting pops up - perhaps the crew is busy with whatever is that they normally do. You look through the packets, and hey, these look pretty interesting...
 
 ## Solution
 
@@ -17,8 +17,6 @@ $ unzip noise-on-the-wire.zip
 Archive:  noise-on-the-wire.zip
  extracting: httponly.pcap
 ```
-
-Let's look at the files and see what we're dealing with.
 
 We only have one [PCAP](https://www.reviversoft.com/en/file-extensions/pcap) file, containing captured network packets. The most common tool for analyzing this kind of file is [Wireshark](https://www.wireshark.org/), so we're going to be using that.
 

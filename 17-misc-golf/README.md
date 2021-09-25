@@ -27,8 +27,6 @@ Archive:  golf.zip
  extracting: tester.py
 ```
 
-Let's look at the files and see what we're dealing with.
-
 This challenge serves as an introduction to the game of [Code Golf](https://en.wikipedia.org/wiki/Code_golf). The way to play is to write a program that accomplishes some goal with the minimum number of bytes, similar to how in the sport of Golf you aim to get the ball in the hole in as few strokes as possible.
 
 The goal is pretty straightforward: golf `encoder.py` until it's 235 bytes. So just how far off are we from that?
@@ -327,7 +325,7 @@ def step1_encode_as_tlv(input_data_as_byte_stream):
     make_tlv("DATA", input_data_as_byte_stream),
     make_tlv("END.", bytes("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "utf-8"))
   ])
-  
+
 def step2_encrypt_data(data_to_encrypt):
   return bytes(bytearray([
     data_to_encrypt[i] ^ (NUMBERS[i] & 0xff)

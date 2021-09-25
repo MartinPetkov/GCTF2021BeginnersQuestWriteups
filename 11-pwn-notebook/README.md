@@ -24,8 +24,6 @@ Archive:  notebook.zip
  extracting: notebook
 ```
 
-Let's look at the files and see what we're dealing with.
-
 We have a single binary and no source code. Presumably that's the same binary running at the address above.
 
 Since we're not given source code, there's really only two ways to approach this kind of challenge:

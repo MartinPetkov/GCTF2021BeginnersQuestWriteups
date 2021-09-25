@@ -28,8 +28,6 @@ $ tar -tvzf chall.tar.gz
 -rw-r--r-- chief/chief 25287005 2021-08-23 04:52 7.csv
 ```
 
-Let's look at the files and see what we're dealing with.
-
 On the surface we have precious few clues to go on. The story suggests we're connected to a live feed from a CCTV system, but all we have is some CSV files. Let's examine one at random:
 
 ```

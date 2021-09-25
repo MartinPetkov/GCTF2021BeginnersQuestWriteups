@@ -23,8 +23,6 @@ Archive:  law-of-droids.zip
 
 *Note: Unfortunately, I can't include the `law-of-droids.zip` file here as it exceeds GitHub's file size limit of 100.00 MB*
 
-Let's look at the files and see what we're dealing with.
-
 What is a `bzImage` you might ask? I hadn't heard of this before, but Googling immediately leads us to [vmlinux](https://en.wikipedia.org/wiki/Vmlinux) where it says that `bzImage` is just a compressed Linux image.
 
 The .apk file is an [Android Package](https://en.wikipedia.org/wiki/Android_application_package), which can also be Googled quite easily but should be immediately familiar to anyone who's done Android development before.

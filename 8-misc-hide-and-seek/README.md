@@ -18,8 +18,6 @@ Archive:  hide-and-seek.zip
  extracting: hideandseek.png
 ```
 
-Let's look at the files and see what we're dealing with.
-
 We only have one image. It doesn't look like anything:
 
 ![Hide and Seek image](hideandseek.png)

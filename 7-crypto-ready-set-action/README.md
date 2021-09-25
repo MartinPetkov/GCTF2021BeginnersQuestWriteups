@@ -19,8 +19,6 @@ Archive:  ready-set-action.zip
  extracting: __pycache__/chall.cpython-39.pyc
 ```
 
-Let's look at the files and see what we're dealing with.
-
 These are Python 3 files. The [.pyc](https://docs.python.org/3/glossary.html#term-bytecode) file contains Python bytecode. However, the only thing of note in it is one "REDACTED" value:
 
 ```sh

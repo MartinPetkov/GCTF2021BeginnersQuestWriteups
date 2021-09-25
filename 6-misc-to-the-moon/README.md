@@ -31,8 +31,6 @@ Archive:  to-the-moon.zip
  extracting: encodings
 ```
 
-Let's look at the files and see what we're dealing with.
-
 First, the [encodings](encodings):
 
 ```

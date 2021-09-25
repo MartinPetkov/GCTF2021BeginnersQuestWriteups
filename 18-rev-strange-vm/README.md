@@ -31,8 +31,6 @@ vm-cli/Cargo.lock
 vm-cli/.gitignore
 ```
 
-Let's look at the files and see what we're dealing with.
-
 First, the [`.rom`](https://fileinfo.com/extension/rom) file. What is this? According to the link from a quick Google search, it's extracted memory from a hardware read-only memory chip. Trying to fingerprint it doesn't help:
 
 ```sh

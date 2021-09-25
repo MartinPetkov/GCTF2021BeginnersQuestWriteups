@@ -18,8 +18,6 @@ Archive:  just-another-keypad.zip
  extracting: keypad.pas
 ```
 
-Let's look at the files and see what we're dealing with.
-
 What is a .pas file? Well, as the story states, this is [Free Pascal](https://wiki.freepascal.org/). I have precisely 0 experience with Free Pascal, so I'm going to attempt to convert it into a Python program instead and hopefully that will make it much easier to understand. Along the way we'll be extra careful to double-check the meaning of all symbols and syntactical elements, just in case they mean something different in this world than elsewhere.
 
 Let's go through the [keypad.pas](keypad.pas) file top-to-bottom and try to understand what's happening.
@@ -64,7 +62,7 @@ Begin
 End;
 ```
 
-This seems to check that each digit in the code is 0-9 then `or` it with certain bits in `x`, which starts off as all 0s. 
+This seems to check that each digit in the code is 0-9 then `or` it with certain bits in `x`, which starts off as all 0s.
 
 In Free Pascal, it appears that a [QWord](https://wiki.freepascal.org/QWord) is an unsigned 64-bit integer and [`or`](https://wiki.freepascal.org/Or) is an [overloaded](https://wiki.freepascal.org/Operator_overloading) operator which acts as a [bitwise OR](https://wiki.freepascal.org/Or#bitwise_operation) when operating on ints. [`shl`](https://wiki.freepascal.org/Shl) is a bitwise left shift which fills with 0s.
 
