@@ -27,7 +27,7 @@ The only piece of interactivity is this:
 If you'd like to return to this quote, just click here.
 ```
 
-That shows us that the page supports an `id` parameter, like `/?id=2`. Maybe this can be exploited for [SQL injection](https://portswigger.net/web-security/sql-injection)?
+That shows us that the page supports an `id` [query parameter](https://en.wikipedia.org/wiki/Query_string), like `/?id=2`. Maybe this can be exploited for [SQL injection](https://portswigger.net/web-security/sql-injection)?
 
 Let's try a few things:
 
@@ -92,7 +92,7 @@ WHERE id = 77 UNION SELECT * FROM quotes
 
 ### Looking for the flag
 
-Now what? We can already look up any row in the `quotes` table. Enumerating it doesn't find anything.
+Now what? We can already look up any row in the `quotes` table. Enumerating it only finds more quotes.
 
 Maybe the flag is in another table. But how do we find out what tables are out there?
 

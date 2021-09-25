@@ -26,6 +26,8 @@ Analyzing pcaps requires some understanding of computer networking and common pr
 
 *Note: This is much too broad of topic to cover here but the rest of this writeup does assume some basic knowledge of TCP/IP.*
 
+### Initial Analysis
+
 Let's take an initial look:
 
 ![Wireshark all packets](wireshark_all_packets.png)
@@ -36,7 +38,7 @@ We see a few things of note:
 * A few HTTP messages.
 * A few [WebSocket](https://en.wikipedia.org/wiki/WebSocket) messages at the end.
 
-The WebSocket wiki page says it uses the [HTTP Upgrade header](https://en.wikipedia.org/wiki/HTTP/1.1_Upgrade_header) to morph the connection, so it's reasonable to assume some of the HTTP packets were used to establish or initiate the WebSocket connection.
+The WebSocket wiki page says it uses the [HTTP Upgrade header](https://en.wikipedia.org/wiki/HTTP/1.1_Upgrade_header) to animorph the connection, so it's reasonable to assume some of the HTTP packets were used to establish or initiate the WebSocket connection.
 
 Let's filter out TCP and focus on the remaining protocols, using the following filter:
 
@@ -85,7 +87,7 @@ What does this page look like when you extract it as an HTML file?
 
 ![The encryption web page with code name and message](code_and_message.png)
 
-You can seemingly encrypt messages.
+You can seemingly encrypt messages with "Military Grade Encryption". I'm shaking and my confidence is faltering.
 
 More interesting are the JavaScript functions embedded in the page source:
 
@@ -99,7 +101,7 @@ function decryptWithMilitaryGradeEncryption(hexstr) {
 }
 ```
 
-We can probably just use these from the console. Let's move on with the last few packets.
+We can probably just use these directly, from the Chrome Dev Tools console. Let's move on to the last few packets.
 
 ```
 GET / HTTP/1.1\r\n
@@ -108,12 +110,13 @@ HTTP/1.1 101 Switching Protocols\r\n
   Connection: Upgrade\r\n
   Sec-WebSocket-Accept: qxA6c0bXwkHUXALTC5mfFrg8438=\r\n
 GET /favicon.ico HTTP/1.1\r\n
-GET /favicon.ico HTTP/1.1\r\n
 ```
 
-The favicon GET is uninteresting, but the other packet confirms our suspicion: they've activated a WebSocket channel.
+The favicon GET is uninteresting, but the other packets confirm our suspicion: they've activated a WebSocket channel.
 
 ### The WebSocket packets
+
+WebSockets aren't inherently encrypted. We can just read the messages they sent.
 
 ```
 {"militaryGradeEncryption":false,"codename":"Goon8133","message":"what's the password to the zip file?"}
@@ -137,11 +140,11 @@ Let's plug the hex strings from the last 3 messages into the decryption function
 'yeah'
 ```
 
-"Military-grade" indeed.
+"Military Grade" indeed.
 
 ### Extracting the flag
 
-Let's unzip the file:
+Let's unzip the file using the password:
 
 ```sh
 $ unzip flag.zip
