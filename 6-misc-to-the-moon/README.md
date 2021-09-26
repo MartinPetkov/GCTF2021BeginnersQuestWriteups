@@ -133,7 +133,9 @@ This looks more promising! Not only does it succeed, but you can kind of see a p
 
 # Step 2: The base65536-decoded file
 
-So what are we actually looking at? It's hex bytes, so I tried putting it in Cyber Chef with "From Hex", which appears to work! We see the string ["JFIF"](https://en.wikipedia.org/wiki/JPEG_File_Interchange_Format) appear early on, so let's save this as the file [chall.base65536_decoded.png](chall.base65536_decoded.png). Sure enough, this is recognized as an image:
+So what are we actually looking at? All the characters are either a number 0-9, or a letter a-f. This requires some intuition and having seen it before, but it is actually [hexadecimal (hex)](https://en.wikipedia.org/wiki/Hexadecimal) data.
+
+So, I tried putting it in Cyber Chef with "From Hex", which appears to work! We see the string ["JFIF"](https://en.wikipedia.org/wiki/JPEG_File_Interchange_Format) appear early on, so let's save this as the file [chall.base65536_decoded.png](chall.base65536_decoded.png). Sure enough, this is recognized as an image:
 
 ```sh
 $ file chall.base65536_decoded.png
