@@ -23,12 +23,12 @@ These are some of the tools used throughout the writeups:
 * [`bash`](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) - A popular [Unix shell](https://en.wikipedia.org/wiki/Unix_shell) that comes with most modern Linux distros. Used in the majority of challenges, since only a few are web-only and I like feeling like a [l33t hacker](https://www.youtube.com/watch?v=u8qgehH3kEQ).
 * [`file`](https://linux.die.net/man/1/file) - An extremely helpful utility which attempts to identify the type of a file. It's important to remember that in Linux, [file extensions](https://en.wikipedia.org/wiki/Filename_extension) have no inherent relation to the file type; that's entirely determined by data in the file and how it's parsed.
 * [`tar`](https://www.gnu.org/software/tar/)/[`unzip`](https://linux.die.net/man/1/unzip) - Utilities for working with archives.
-* [`curl`](https://en.wikipedia.org/wiki/CURL) - A utility for requesting URLs on the command line. Allows interacting with and automating web challenges.
+* [`curl`](https://en.wikipedia.org/wiki/CURL) - Used for requesting URLs on the command line. Allows interacting with and automating web challenges.
 * [`wget`](https://www.gnu.org/software/wget/) - Another utility for downloading files from URLs. More convenient to use in some ways.
-* [`hexdump`](https://linux.die.net/man/1/hexdump) - A utility for dumping the bytes from a file in [hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) format.
-* [`xxd`](https://linux.die.net/man/1/xxd) - Another utility for parsing and dealing with hex data.
-* [`wc`](https://linux.die.net/man/1/wc) - A utility that counts bytes, characters, words or lines.
-* [`exiftool`](https://exiftool.org/) - A utility for reading, writing and editing metadata on files. Great for parsing metadata from images.
+* [`hexdump`](https://linux.die.net/man/1/hexdump) - Used for dumping the bytes from a file in [hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) format.
+* [`xxd`](https://linux.die.net/man/1/xxd) - Used for parsing and dealing with hex data.
+* [`wc`](https://linux.die.net/man/1/wc) - Used to count bytes, characters, words or lines.
+* [`exiftool`](https://exiftool.org/) - Used for reading, writing and editing metadata on files. Great for parsing metadata from images.
 * [`netcat`](https://en.wikipedia.org/wiki/Netcat) - An extremely useful utility for working with network connections. Most often in CTFs this is used to connect to a remote server hosting a CTF challenge.
 * [Python 3](https://www.python.org/) - A programming language. Very popular, very readable, and extremely ergonomic and comfortable to program in. It can also be used to write scripts.
 * [CyberChef](https://gchq.github.io/CyberChef/) - A online "Swiss Army Knife" of data conversion. Has a huge variety of methods for converting data between different formats (binary, hex, text, etc.).
