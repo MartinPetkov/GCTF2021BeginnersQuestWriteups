@@ -45,7 +45,7 @@ The page source:
 
 There's practically nothing going on here. There's a quote and an author. There's no way to enter new quotes. Trying various sub-pages like "/admin" or "/add_quote" and variations also turns up nothing. There's no JavaScript, either included or embedded in the page source (besides [Bootstrap](https://getbootstrap.com/docs/3.4/javascript/)).
 
-One cool thing you can do is use a website or extension like [BuiltWith](https://builtwith.com/) or [Wappalyzer](https://www.wappalyzer.com/) to profile the website and see what technologies it's using. In this case though, all we find is that the website uses Ubuntu, Apache, GCP and some kind of CDN. No hint on whether there's a database or what kind if so.
+One cool thing you can do is use a website or extension like [BuiltWith](https://builtwith.com/) or [Wappalyzer](https://www.wappalyzer.com/) to profile the website and see what technologies it's using. In this case though, all you'd find is that the website uses Ubuntu, Apache, GCP and some kind of CDN. No hint on whether there's a database or what kind if so.
 
 ### Looking for SQL injection
 
