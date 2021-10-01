@@ -51,8 +51,8 @@ One cool thing you can do is use a website or extension like [BuiltWith](https:/
 
 The only piece of interactivity is this:
 
-```
-If you'd like to return to this quote, just click here.
+```html
+If you'd like to return to this quote, just <a href="?id=1">click here</a>.
 ```
 
 That shows us that the page supports an `id` [query parameter](https://en.wikipedia.org/wiki/Query_string), like `/?id=2`. Maybe this can be exploited for [SQL injection](https://portswigger.net/web-security/sql-injection)?
@@ -95,14 +95,14 @@ What about this? *(I just guessed that the table is called "quotes")*
 If you want total security, go to prison. There you're fed, clothed, given medical care and so on. The only thing lacking... is freedom." - Dwight D. Eisenhower
 ```
 
-Oh! This isn't sanitized away! However, it returns the first quote, presumably because it selects the top result from the query. Let's verify this by using a nonexistent quote id but still selecting from the `quotes` table:
+Oh! This isn't sanitized away! However, it only returns the first quote, presumably because it selects the top result from the query. Let's verify this by using a nonexistent quote id but still selecting from the `quotes` table:
 
 ```
 /?id=77 UNION SELECT * FROM quotes
 "If you want total security, go to prison. There you're fed, clothed, given medical care and so on. The only thing lacking... is freedom." - Dwight D. Eisenhower
 ```
 
-It works! It returns the first quote, presumably because the main query was something like this
+It works! It returns the first quote, probably because the main query was something like this
 
 ```sql
 SELECT *
@@ -124,7 +124,7 @@ Now what? We can already look up any row in the `quotes` table. Enumerating it o
 
 Maybe the flag is in another table. But how do we find out what tables are out there?
 
-It's [possible](https://www.sqltutorial.org/sql-list-all-tables/) in some engines to directly query metadata tables. We don't know exactly what DB this website is using, but let's try a few known metadata table names.
+It's [possible](https://www.sqltutorial.org/sql-list-all-tables/) in some engines to directly query metadata tables, which tell us about the database and the tables it contains. We don't know exactly what DB this website is using, but let's try a few known metadata table names.
 
 Before we do so though, we need to determine how many columns are in the quotes database. We can't just `SELECT *` from arbitrary tables or the `UNION` would fail as it can't match up the rows. This is pretty simple to do though - just try selecting static values and increasing the number until we get a success.
 
@@ -157,7 +157,7 @@ HTTP Status 500
 HTTP Status 200
 ```
 
-Interesting! That tells us we're dealing with [MySQL](https://www.mysql.com/). Now let's try to select some rows from it. You can Google and find [the docs](https://dev.mysql.com/doc/mysql-infoschema-excerpt/8.0/en/information-schema-tables-table.html) which describe the available columns.
+Score! That tells us we're dealing with [MySQL](https://www.mysql.com/). Now let's try to select some rows from it. You can Google and find [the docs](https://dev.mysql.com/doc/mysql-infoschema-excerpt/8.0/en/information-schema-tables-table.html) which describe the available columns.
 
 ```
 /?id=77 UNION SELECT TABLE_CATALOG,TABLE_NAME,TABLE_TYPE FROM information_schema.tables
