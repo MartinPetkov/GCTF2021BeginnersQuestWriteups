@@ -15,6 +15,34 @@ Let's visit it and see what we're dealing with.
 
 ![The Quote DB homepage](quotedb_homepage.png)
 
+The page source:
+
+```html
+
+<html>
+  <head>
+    <title>Quote DB</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+  </head>
+
+  <body>
+
+<h1>Welcome to the amazing Quote DB</h1>
+<div>
+  <p>Here's the quote of the day for you: </p>
+  <p class='quote'>
+    "If you want total security, go to prison. There you're fed, clothed, given medical care and so on. The only thing lacking... is freedom." - Dwight D. Eisenhower  </p>
+  <p>
+    If you'd like to return to this quote, just
+    <a href="?id=1">click here</a>.
+  </p>
+</div>
+
+</body>
+</html>
+```
+
 There's practically nothing going on here. There's a quote and an author. There's no way to enter new quotes. Trying various sub-pages like "/admin" or "/add_quote" and variations also turns up nothing. There's no JavaScript, either included or embedded in the page source.
 
 One cool thing you can do is use a website or extension like [BuiltWith](https://builtwith.com/) or [Wappalyzer](https://www.wappalyzer.com/) to profile the website and see what technologies it's using. In this case though, all we find is that the website uses Ubuntu, Apache, GCP and some kind of CDN. No hint on whether there's a database or what kind if so.
