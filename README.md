@@ -2,7 +2,7 @@
 
 This repository contains my writeups for all the challenges in the [Google CTF 2021 Beginners Quest](https://capturetheflag.withgoogle.com/beginners-quest). The CTF took place on August 27-29 2021 and consisted of 18 challenges ranging in type from coding, reversing, web exploitation, pwn, data parsing, steganography, and more.
 
-**I highly encourage you try to solve the challenges yourself before reading the solutions here**, or at least use them sparingly to get unstuck. This is the best way to learn, especially with topics you are new to and unfamiliar with. I certainly am not an expert in all categories and I learned a great deal from this CTF.
+**I highly encourage you try to solve the challenges yourself before reading the solutions here**, or use them sparingly to get unstuck. This is the best way to learn, especially with topics you are new to and unfamiliar with. I certainly am not an expert in all categories and I learned a great deal from this CTF.
 
 ## Structure
 
