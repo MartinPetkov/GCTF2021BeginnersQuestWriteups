@@ -93,8 +93,8 @@ It might seem like we're stuck, but it also seems like we know enough values to 
 Let's think about it some more:
 
 * The remainder (`c`) is some value between 0 and `n`, by the definition of how modulo works.
-* The value other than `c` is always going to be some multiple of `n`, again by the definition of how modulo works.
-* That means that flag raised to `e` (`flag ^ 3`) is `<some multiple of n> + c`.
+* The `flag ^ 3` value is always going to be some multiple of `n` (including possibly `0 * n`), again by the definition of how modulo works.
+* That means that flag raised to `e` is `<some multiple of n> + c`.
 * And the flag itself is that value at the 3rd root.
 
 This is enough intuition to start guessing the flag.
