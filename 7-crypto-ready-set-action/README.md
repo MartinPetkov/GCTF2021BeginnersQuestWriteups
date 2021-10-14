@@ -119,18 +119,12 @@ e = 3
 for k in range(0,100000):
   plaintext, exact = gmpy2.iroot(gmpy2.mpz((k * n) + c), e)
   if exact:
-    data = long_to_bytes(plaintext)
-    print(f'Exact: {exact} ; {data}')
+    flag = long_to_bytes(plaintext).decode('utf-8')
+    print(flag)
+    break
 ```
 
-We run it and it almost immediately spits out something:
-
-```
-$ python solve.py
-Exact: True ; b'CTF{34sy_RS4_1s_e4sy_us3}\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-```
-
-And there we have our flag.
+We run it and it almost immediately finds our flag:
 
 ```
 CTF{34sy_RS4_1s_e4sy_us3}
