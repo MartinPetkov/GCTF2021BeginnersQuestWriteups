@@ -28,8 +28,8 @@ We have a single binary and no source code. Presumably that's the same binary ru
 
 Since we're not given source code, there's really only two ways to approach this kind of challenge:
 
-1. Interact with the binary or the hosted service, try different inputs and observe the effects (dynamic analysis).
-1. [Disassemble](https://en.wikipedia.org/wiki/Disassembler) or [decompile](https://en.wikipedia.org/wiki/Decompiler) the binary and try to make sense of the assembly code (static analysis).
+1. Interact with the binary or the hosted service, try different inputs and observe the effects (**dynamic analysis**).
+1. [Disassemble](https://en.wikipedia.org/wiki/Disassembler) or [decompile](https://en.wikipedia.org/wiki/Decompiler) the binary and try to make sense of the assembly code (**static analysis**).
 
 We're going to do both, since they can each give us tons of information.
 
@@ -138,7 +138,7 @@ Here's a list of our notes:
  - 09. length: 000, state: DELETED
 ```
 
-Nothing changed, which is a little curious. Deleting doesn't erase the contents, since the lenght of note 3 is still 40.
+Nothing changed, which is a little curious. Deleting doesn't erase the contents, since the length of note 3 is still 40.
 
 What about adding a note?
 
@@ -251,7 +251,7 @@ Quote: \\
         > ^ <
 ```
 
-Oh well. Nothing of note so far. Let's try some static analysis and see if we find a clue.
+Oh well. Nothing of note so far. Let's take a small detour and try static analysis to see if we find more clues.
 
 ### Static analysis
 
@@ -263,9 +263,9 @@ $ objdump -drwC -M intel ./notebook
 
 But that alone is going to be extremely hard to work with unless you're an experienced assembly developer. Even then, this isn't an ideal approach.
 
-Much better for your sanity are dedicated disassembly/reversing tools:
+Much better for your sanity is to use a dedicated disassembly/reversing tool:
 
-* [IDA Pro](https://hex-rays.com/ida-pro/) - I've heard great things about it but you need to be made of money (or work for a company which is) to afford it.
+* [IDA Pro](https://hex-rays.com/ida-pro/) - I've heard great things about it but you need to be made of money to afford it (or work for a company with a money printer).
 * [Ghidra](https://ghidra-sre.org/) - The free competitor to IDA Pro, made by the NSA. Many people's preferred choice and pretty full-featured.
 * [radare2](https://github.com/radareorg/radare2) - Notable for working on the command-line. This can be fantastic if you're without a graphical environment, such as when `ssh`ing to another computer. I've heard it's great but quite hard to pick up.
 * [cutter](https://cutter.re/) - Another nice free disassembler with a GUI. I'm not familiar with it.
@@ -295,7 +295,7 @@ There's not too much going on here. It only supports 9 notes. The line
 
 is hard to read, but it's most likely accessing a field in a list of structs, with the input (`rdx_1`) used as the offset.
 
-There's also `__stack_chk_fail()` which sounds like part of a [stack canary](https://en.wikipedia.org/wiki/Buffer_overflow_protection#Canaries) protection, which we're not going to bypass easily (remember, this is "Beginners" Quest - the intended approach is supposed to be fairly easy).
+There's also `__stack_chk_fail()`. This sounds like [stack canary protection](https://en.wikipedia.org/wiki/Buffer_overflow_protection#Canaries), which we're not going to bypass easily (remember, this is "Beginners" Quest - the intended approach is supposed to be fairly easy).
 
 There's also the curious function `catsay` (called it!). It's not a standard Linux command, so it's probably custom for this challenge. Let's look a bit deeper.
 
@@ -305,7 +305,7 @@ There's a lot going on here, but it boils down to the following:
 
 * Calls `get_dimensions` to calculate the width of the text box.
 * Calls `print_line` repeatedly to print the note.
-* Prints a cat.
+* Prints an ASCII cat.
 * Checks the stack canary.
 
 At this point I had a hunch. Does `print_line` sanitize the input in any way?
@@ -315,6 +315,8 @@ At this point I had a hunch. Does `print_line` sanitize the input in any way?
 Do you see it?
 
 It's a bit hard to trace due to the calls to [`strncpy`](https://linux.die.net/man/3/strncpy) and [`strncat`](https://linux.die.net/man/3/strncat), but ultimately our input is passed unmodified to [`printf`](https://linux.die.net/man/3/printf). That's a classic indicator of a possible [format string vulnerability](https://en.wikipedia.org/wiki/Uncontrolled_format_string).
+
+`print_line` is also called by `draft_note`, so we're going to use that, since it's a single action while `print_note` is 2 actions (`add_note`, `print_note`).
 
 But does it work?
 
@@ -342,7 +344,7 @@ I'd kind of like to avoid the `%n` trick as I find it convoluted and tricky to g
 
 Instead let's see if we can print memory. This assumes the note is somewhere in memory AFTER the location of the code that's executing, but maybe we're lucky this way.
 
-An important concept to understand here is the [parameter field](https://en.wikipedia.org/wiki/Printf_format_string#Parameter_field). This lets us specify a specific argument. For example, to print the 3rd arg as a pointer:
+An important concept to understand here is the [parameter field](https://en.wikipedia.org/wiki/Printf_format_string#Parameter_field) in a format string. This lets us specify a specific argument to consume. For example, to print the 3rd arg as a pointer:
 
 ```
 %3$p
