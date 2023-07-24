@@ -218,7 +218,7 @@ Verifying tests...
 All tests passed!
 ```
 
-**Savings:** 47 **Total savings:** 47
+**Savings:** 47 **Remaining:** 6928
 
 ## Hole 1: Golf the prime NUMBERS
 
@@ -259,7 +259,7 @@ All tests passed!
 
 Wonderful!
 
-**Savings:** 6145 **Total savings:** 6192
+**Savings:** 6145 **Remaining:** 783
 
 ## Hole 2: Golf the lists
 
@@ -326,7 +326,7 @@ All tests passed!
 
 Great!
 
-**Savings:** 200 **Total savings:** 6392
+**Savings:** 200 **Remaining:** 583
 
 ## Hole 3: Combine function calls
 
@@ -362,7 +362,7 @@ Verifying tests...
 All tests passed!
 ```
 
-**Savings:** 279 **Total savings:** 6671
+**Savings:** 279 **Remaining:** 304
 
 ## Hole 4: Golf the bytes
 
@@ -414,7 +414,7 @@ Verifying tests...
 All tests passed!
 ```
 
-**Savings:** 59 **Total savings:** 6730
+**Savings:** 59 **Remaining:** 245
 
 ## Hole 5: Zip and XOR
 
@@ -448,7 +448,7 @@ Verifying tests...
 All tests passed!
 ```
 
-**Savings:** 36 **Total savings:** 6766
+**Savings:** 36 **Remaining:** 209
 
 ## Hole 6: Inline make_tlv
 
@@ -480,7 +480,7 @@ Verifying tests...
 All tests passed!
 ```
 
-**Savings:** 94 **Total savings:** 6860
+**Savings:** 94 **Remaining:** 115
 
 ## Hole 7: Add the data bytes
 
@@ -506,7 +506,7 @@ Verifying tests...
 All tests passed!
 ```
 
-**Savings:** 26 **Total savings:** 6886
+**Savings:** 26 **Remaining:** 89
 
 ## Hole 8: Deduplicate
 
@@ -535,7 +535,7 @@ All tests passed!
 
 Didn't help too much.
 
-**Savings:** 5 **Total savings:** 6891
+**Savings:** 5 **Remaining:** 84
 
 ## Hole 9: Uglify
 
@@ -560,6 +560,8 @@ Testing your code (length 226)...
 Verifying tests...
 All tests passed!
 ```
+
+**Savings:** 93 **Remaining:** -9
 
 And we finally get our flag:
 
