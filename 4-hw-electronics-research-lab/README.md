@@ -21,7 +21,7 @@ Archive:  ./electronics-research-lab.zip
 
 What could this be? It's a hardware challenge, so maybe something to do with [Arduino](https://www.arduino.cc/) or [Raspberry Pi](https://www.raspberrypi.org/). Let's Google around.
 
-Googling "pico hardware" quickly leads us to discover that the [Raspberry Pi Pico](https://www.raspberrypi.org/products/raspberry-pi-pico/specifications/) is a thing. Progress made! That means that maybe we can run the chal.c file in a a Pico.
+Googling "pico hardware" quickly leads us to discover that the [Raspberry Pi Pico](https://www.raspberrypi.org/products/raspberry-pi-pico/specifications/) is a thing. Progress made! That means that maybe we can run the chal.c file in a Pico.
 
 What is a uf2 file? Well, googling it leads to [Microsoft UF2](https://github.com/microsoft/uf2):
 
