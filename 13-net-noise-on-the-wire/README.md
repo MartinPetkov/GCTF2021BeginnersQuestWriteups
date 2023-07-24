@@ -22,7 +22,7 @@ We only have one [PCAP](https://www.reviversoft.com/en/file-extensions/pcap) fil
 
 The file is called "httponly", which may be a reference to the [HttpOnly](https://owasp.org/www-community/HttpOnly) cookie flag. Let's keep that in mind in case it becomes useful.
 
-Analyzing pcaps requires some understanding of computer networking and common protocols, such as the [OSI Model](https://en.wikipedia.org/wiki/OSI_model), [TCP/IP](https://en.wikipedia.org/wiki/Internet_protocol_suite), and the the [TCP Three-Way Handshake](https://en.wikipedia.org/wiki/Transmission_Control_Protocol#Connection_establishment). However, even just looking at the packet payload can often be enough.
+Analyzing pcaps requires some understanding of computer networking and common protocols, such as the [OSI Model](https://en.wikipedia.org/wiki/OSI_model), [TCP/IP](https://en.wikipedia.org/wiki/Internet_protocol_suite), and the [TCP Three-Way Handshake](https://en.wikipedia.org/wiki/Transmission_Control_Protocol#Connection_establishment). However, even just looking at the packet payload can often be enough.
 
 *Note: This is much too broad of topic to cover here but the rest of this writeup does assume some basic knowledge of TCP/IP.*
 
